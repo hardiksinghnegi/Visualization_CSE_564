@@ -24,6 +24,12 @@
     <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
 
+<style> /* set the CSS */
+
+.bar { fill: steelblue; }
+
+</style>
+
 <body>
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -190,6 +196,9 @@
                 </div>
             </div>
             <!-- page title area end -->
+            <div class="year-chart" align="center">
+
+            </div>
         </div>
         <!-- main content area end -->
         <!-- footer area start-->
@@ -228,6 +237,83 @@
     <!-- others plugins -->
     <script src="{{ url_for('static',filename='styles/js/plugins.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/scripts.js') }}"></script>
+
+    <!-- load the d3.js library -->
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+        let data;
+        data = {{ data.incident_data | safe }};
+
+        const drawBarChart = function (data) {
+
+            //set the dimensions
+            const margin = 200,
+            width = 900 - 250,
+            height = 500 - margin;
+
+            //Append SVG to the plotchart div
+            const svg = d3.select(".year-chart")
+                        .append('svg')
+                        .attr("class", "barchart")
+                        .attr('width', 800)
+                        .attr('height', 500)
+
+            //Scale the axis
+            const xScale = d3.scaleBand().range([0, width]).padding(0.4);
+            const yScale = d3.scaleLinear().range([height, 0]);
+
+
+            const g = svg.append("g")
+                         .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+
+            const yearList = Object.keys(data);
+            const incidentFrequency =  Object.values(data);
+
+            xScale.domain(yearList);
+            yScale.domain([0, d3.max(incidentFrequency)+10]);
+
+            g.append("g") //Another group element to have our x-axis grouped under one group element
+             .attr("transform", "translate(0," + height + ")") // We then use the transform attribute to shift our x-axis towards the bottom of the SVG.
+             .call(d3.axisBottom(xScale)) //We then insert x-axis on this group element using .call(d3.axisBottom(x)).
+             .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-90)" );
+
+            g.append("g") //Another group element to have our y-axis grouped under one group element
+                .call(d3.axisLeft(yScale).tickFormat(function(d){ // Try with X Scaling too.
+                    return  d;
+                })
+                .ticks(10)) //We have also specified the number of ticks we would like our y-axis to have using ticks(10).
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 1)
+                .attr("dy", "-3.1em")
+                .attr("text-anchor", "end")
+                .attr("stroke", "black")
+                .style("fill", "black")
+                .style("font-size", "10px")
+                .text("INCIDENTS FREQUENCY");
+
+            g.selectAll(".bar") //created dynamic bars with our data using the SVG rectangle element.
+                .data(yearList) // Load the data to be displayed
+                .enter().append("rect") // Append rectangle bars
+                .attr("class", "bar") // CSS class bars to give color to the bars
+                .attr("x", function(d) {return xScale(d); })  //Determining x-axis from the scaled data
+                .attr("y", function(d, i) { return yScale(incidentFrequency[i]); }) // //Determining y-axis from the scaled data
+                .attr("width", xScale.bandwidth()) //Determining the width of bars by the scaleBand() function.
+                .attr("height", function(d, i) {
+                    console.log(height - yScale(incidentFrequency[i]));
+                    return height - yScale(incidentFrequency[i]); });//Determining the height of the bars.
+        };
+
+        drawBarChart(data);
+
+    </script>
 </body>
 
 </html>
