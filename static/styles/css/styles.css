@@ -91,6 +91,7 @@
 .main-content {
     width: 100%;
     background: #F3F8FB;
+	overflow:hidden;
 }
 
 .main-content-inner {
@@ -444,6 +445,20 @@
 }
 
 .sbar_collapsed .nav-btn span:last-child {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+}
+
+.sbar_collapsed2 .nav-btn span:first-child {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+}
+
+.sbar_collapsed2 .nav-btn span:nth-child(2) {
+    opacity: 1;
+}
+
+.sbar_collapsed2 .nav-btn span:last-child {
     -webkit-transform: rotate(0deg);
             transform: rotate(0deg);
 }
