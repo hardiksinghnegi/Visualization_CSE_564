@@ -174,7 +174,7 @@
         data = {{ data.incident_data | safe }};
 
         const drawBarChart = function (data) {
-
+            console.log(data);
             //set the dimensions
             const margin = 200,
             width = 900 - 100,
@@ -248,16 +248,16 @@
 				.on('mouseout', tip.hide)
         };
 
-        const drawScree  = function(data) {
-            const margin = { top: 20, right: 50, bottom: 30, left: 50 };
-            const width = 960 - margin.left - margin.right;
-            const height = 500 - margin.top - margin.bottom;
+        const drawScree  = function() {
+            const margin = { top: 20, right: 50, bottom: 30, left: 50 },
+            width = 900 - 100,
+            height = 500 - 200;
 
             const parseTime = d3.timeParse('%d-%b-%Y');
             const bisectDate = d3.bisector(d => d.date).left;
 
             d3.select('.year-chart')
-            .style('font', '10px sans-serif')
+            .style('font', '10px sans-serif');
 
             const x = d3.scaleTime()
             .range([0, width]);
@@ -408,8 +408,8 @@
             }
         };
 
-        {#drawBarChart(data);#}
-        drawScree(data);
+        drawBarChart(data);
+        drawScree();
     </script>
 </body>
 
