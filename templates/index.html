@@ -7,7 +7,7 @@
     <title>CSE564 Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/png"  href= "{{ url_for('static',filename='styles/images/icon/favicon.ico') }}">
-    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/font-awesome.min.css') }}">
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/themify-icons.css') }}">
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/metisMenu.css') }}">
@@ -175,9 +175,13 @@
                     </div>
                 </div>
             </div>
-            <!-- page title area end -->
+
             <div class="year-chart border" align="center">
-				<div id="tooltip"></div>
+            <!-- Default checked -->
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="toggleVis" checked>
+                    <label class="custom-control-label" for="toggleVis"></label>
+                </div>
             </div>
 			<div class="tile">
 				Visual #2
@@ -199,8 +203,8 @@
     <!-- jquery latest version -->
     <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
     <!-- bootstrap 4 js -->
-    <script src="{{ url_for('static',filename='styles/js/popper.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='styles/js/bootstrap.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <script src="{{ url_for('static',filename='styles/js/metisMenu.min.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/jquery.slicknav.min.js') }}"></script>
@@ -218,13 +222,16 @@
     <script src='https://npmcdn.com/babel-core@5.8.34/browser.min.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
 
     <script lang="babel" type='text/babel'>
         let data;
+        let toggleVar = 1;
         data = {{ data.incident_data | safe }};
 
         const drawBarChart = function (data) {
+            d3.selectAll('svg').remove();
             console.log(data);
             //set the dimensions
             const margin = 200,
@@ -236,7 +243,7 @@
                         .append('svg')
                         .attr("class", "barchart")
                         .attr('width', 900)
-                        .attr('height', 400)
+                        .attr('height', 400);
 			
             //Scale the axis
             const xScale = d3.scaleBand().range([0, width]).padding(0.4);
@@ -254,7 +261,7 @@
 						.offset([-10, 0])
 						.html(function(d, i) {
 							return "<div class='tip border'><strong>Frequency:</strong> <span style='color:red'>" + incidentFrequency[i] + "</span></div>";
-						  })
+						  });
 			
 			svg.call(tip);
 
@@ -300,6 +307,7 @@
         };
 
         const drawScree  = function() {
+            d3.selectAll('svg').remove();
             const margin = { top: 20, right: 50, bottom: 30, left: 50 },
             width = 800,
             height = 300;
@@ -321,10 +329,10 @@
             .y(d => y(d.count));
 
             const svg = d3.select('.year-chart').append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
+            .attr('width', 900)
+            .attr('height', 400)
             .append('g')
-              .attr('transform', `translate(${margin.left}, ${margin.top})`);
+            .attr("transform", "translate(" + 50 + "," + 40 + ")");
 
             d3.csv("{{ url_for('static',filename='data_files/csv/scree_index.csv') }}", type, (error, data) => {
             if (error) throw error;
@@ -343,13 +351,15 @@
             svg.append('g')
               .attr('class', 'y axis axis--y')
               .call(d3.axisLeft(y))
-              .append('text')
-                .attr('class', 'axis-title')
-                .attr('transform', 'rotate(-90)')
-                .attr('y', 6)
-                .attr('dy', '.71em')
-                .style('text-anchor', 'end')
-                .text('Price ($)');
+                .append("text")
+                .attr("transform", "rotate(-90)")
+				.attr("x", -100)
+                .attr("y", -5)
+                .attr("dy", "-3.1em")
+                .attr("stroke", "black")
+                .style("fill", "black")
+                .style("font-size", "10px")
+                .text("INCIDENTS FREQUENCY");
 
             // style the axes
             d3.selectAll('.axis path')
@@ -458,9 +468,27 @@
                 return d;
             }
         };
-		
-        drawBarChart(data);
-        drawScree();
+
+        const drawVis = function(toggleIndex) {
+
+            if (toggleIndex == 1) {
+                drawBarChart(data);
+            }
+            else {
+                drawScree(data);
+            }
+        };
+
+        $(function() {
+            $('#toggleVis').change(function() {
+               toggleVar =  toggleVar == 2 ? 1 : 2;
+               console.log(toggleVar);
+               drawVis(toggleVar);
+            })
+        });
+
+        drawVis(toggleVar);
+
     </script>
 </body>
 

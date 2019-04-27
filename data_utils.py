@@ -29,10 +29,17 @@ def get_incidents_per_year(data):
     df.to_csv('static/data_files/csv/scree_index.csv', index=False)
     return data['Year'].value_counts().to_dict()
 
+def get_incidents_per_state(data):
+    csv_df = data[['State']]
+    tmp = csv_df.groupby('State').size()
+    df = tmp.to_frame()
+    df = tmp.reset_index(name = 'cases')
+    df.rename(columns={'State':'state'}, inplace=True)
+    df.to_csv('static/data_files/csv/us_state_incidents.csv', index=False)
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-shooting_dataset = config['DATA']['INPUT_CSV_1']
-df = prepare_data(shooting_dataset)
-# get_year_bar_data(df)
-year_dict = get_incidents_per_year(df)
+# config = configparser.ConfigParser()
+# config.read('config.ini')
+# shooting_dataset = config['DATA']['INPUT_CSV_1']
+# df = prepare_data(shooting_dataset)
+# # get_year_bar_data(df)
+# get_incidents_per_state(df)
