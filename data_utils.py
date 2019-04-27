@@ -27,7 +27,7 @@ def get_incidents_per_year(data):
     df.rename(columns={'Year': 'date'}, inplace=True)
     print(df)
     df.to_csv('static/data_files/csv/scree_index.csv', index=False)
-    df = data['Year'].value_counts().to_dict()
+    return data['Year'].value_counts().to_dict()
 
 
 config = configparser.ConfigParser()
