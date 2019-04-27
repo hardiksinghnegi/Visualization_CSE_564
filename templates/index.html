@@ -66,7 +66,7 @@
         <div class="sidebar-menu">
             <div class="sidebar-header">
                 <div class="logo">
-                    <a href="index.html"><img src="{{ url_for('static',filename='styles/images/icon/sbu_logo.png') }}" width="100" alt="logo"></a>
+                    <a href="index.html"><img src="{{ url_for('static',filename='styles/images/icon/sbu_logo_dark.png') }}" width="100" alt="logo"></a>
                 </div>
             </div>
             <div class="main-menu">
@@ -164,10 +164,12 @@
 
     <!-- load the d3.js library -->
     <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+    <script src='https://npmcdn.com/babel-core@5.8.34/browser.min.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <script>
+    <script lang="babel" type='text/babel'>
         let data;
         data = {{ data.incident_data | safe }};
 
@@ -240,15 +242,174 @@
                 .attr("y", function(d, i) { return yScale(incidentFrequency[i]); }) // //Determining y-axis from the scaled data
                 .attr("width", xScale.bandwidth()) //Determining the width of bars by the scaleBand() function.
                 .attr("height", function(d, i) {
-                    console.log(height - yScale(incidentFrequency[i]));
                     return height - yScale(incidentFrequency[i]); })//Determining the height of the bars.
 				.style('cursor', 'pointer')
 				.on('mouseover', tip.show)
 				.on('mouseout', tip.hide)
         };
 
-        drawBarChart(data);
+        const drawScree  = function(data) {
+            const margin = { top: 20, right: 50, bottom: 30, left: 50 };
+            const width = 960 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
 
+            const parseTime = d3.timeParse('%d-%b-%Y');
+            const bisectDate = d3.bisector(d => d.date).left;
+
+            d3.select('.year-chart')
+            .style('font', '10px sans-serif')
+
+            const x = d3.scaleTime()
+            .range([0, width]);
+
+            const y = d3.scaleLinear()
+            .range([height, 0]);
+
+            const line = d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.count));
+
+            const svg = d3.select('.year-chart').append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+              .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+            d3.csv("{{ url_for('static',filename='data_files/csv/scree_index.csv') }}", type, (error, data) => {
+            if (error) throw error;
+            console.log('hello');
+            console.log(data);
+            data.sort((a, b) => a.date - b.date);
+
+            x.domain([data[0].date, data[data.length - 1].date]);
+            y.domain(d3.extent(data, d => d.count));
+
+            svg.append('g')
+              .attr('class', 'x axis axis--x')
+              .attr('transform', `translate(0, ${height})`)
+              .call(d3.axisBottom(x));
+
+            svg.append('g')
+              .attr('class', 'y axis axis--y')
+              .call(d3.axisLeft(y))
+              .append('text')
+                .attr('class', 'axis-title')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 6)
+                .attr('dy', '.71em')
+                .style('text-anchor', 'end')
+                .text('Price ($)');
+
+            // style the axes
+            d3.selectAll('.axis path')
+              .styles({
+                fill: 'none',
+                stroke: '#000',
+                'shape-rendering': 'crispEdges'
+              });
+
+            d3.selectAll('.axis line')
+              .styles({
+                fill: 'none',
+                stroke: '#000',
+                'shape-rendering': 'crispEdges'
+              });
+
+            d3.selectAll('.axis--x path')
+              .style('display', 'none');
+
+            svg.append('path')
+              .datum(data)
+              .attr('class', 'line')
+              .attr('d', line);
+
+            const focus = svg.append('g')
+              .attr('class', 'focus')
+              .style('display', 'none');
+
+            focus.append('circle')
+              .attr('r', 4.5);
+
+            focus.append('line')
+              .classed('x', true);
+
+            focus.append('line')
+              .classed('y', true);
+
+            focus.append('text')
+              .attr('x', 9)
+              .attr('dy', '.35em');
+
+            svg.append('rect')
+              .attr('class', 'overlay')
+              .attr('width', width)
+              .attr('height', height)
+              .on('mouseover', () => focus.style('display', null))
+              .on('mouseout', () => focus.style('display', 'none'))
+              .on('mousemove', mousemove);
+
+            d3.selectAll('.line')
+              .styles({
+                fill: 'none',
+                stroke: 'steelblue',
+                'stroke-width': '1.5px'
+              });
+
+            d3.select('.overlay')
+              .styles({
+                fill: 'none',
+                'pointer-events': 'all'
+              });
+
+            d3.selectAll('.focus')
+              .style('opacity', 0.7);
+
+            d3.selectAll('.focus circle')
+              .styles({
+                fill: 'none',
+                stroke: 'black'
+              });
+
+            d3.selectAll('.focus line')
+              .styles({
+                fill: 'none',
+                'stroke': 'black',
+                'stroke-width': '1.5px',
+                'stroke-dasharray': '3 3'
+              });
+
+            function mousemove() {
+                const x0 = x.invert(d3.mouse(this)[0]);
+                const i = bisectDate(data, x0, 1);
+                const d0 = data[i - 1];
+                const d1 = data[i];
+                const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+                focus.attr('transform', `translate(${x(d.date)}, ${y(d.count)})`);
+                focus.select('line.x')
+                .attr('x1', 0)
+                .attr('x2', -x(d.date))
+                .attr('y1', 0)
+                .attr('y2', 0);
+
+                focus.select('line.y')
+                .attr('x1', 0)
+                .attr('x2', 0)
+                .attr('y1', 0)
+                .attr('y2', height - y(d.count));
+
+                focus.select('text').text(d.count);
+            }
+            });
+
+            function type(d) {
+                d.date = parseTime(d.date);
+                d.count = +d.count;
+                return d;
+            }
+        };
+
+        {#drawBarChart(data);#}
+        drawScree(data);
     </script>
 </body>
 
