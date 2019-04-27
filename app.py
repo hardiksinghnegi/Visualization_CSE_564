@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect, Response, jsonify
 app = Flask(__name__)
 
 
-@app.route("/", methods = ['POST', 'GET'])
+@app.route("/home", methods = ['POST', 'GET'])
 def index():
     """
         Main Index page
@@ -18,9 +18,19 @@ def index():
     shooting_dataset = config['DATA']['INPUT_CSV_1']
     df = prepare_data(shooting_dataset)
     year_dict = get_incidents_per_year(df)
+    for key, value in year_dict.items():
+        year_dict[key] = value.item()
     year_json = json.dumps(year_dict)
     data = {'incident_data': year_json}
     return render_template('index.html', data=data)
+
+@app.route("/maps", methods = ['POST', 'GET'])
+def data_maps():
+    """
+        Regional Content / Maps page
+    """
+	
+    return render_template('maps.html')
 
 
 if __name__ == "__main__":
