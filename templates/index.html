@@ -19,6 +19,7 @@
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/default-css.css') }}">
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/styles.css') }}">
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/responsive.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/ethincmix.css') }}">
     <!-- modernizr css -->
     <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 	<script>
@@ -175,19 +176,16 @@
                     </div>
                 </div>
             </div>
-
-            <div class="year-chart border" align="center">
-            <!-- Default checked -->
+            <div class="bar-scree">
                 <div class="custom-control custom-switch">
                     <input type="checkbox" class="custom-control-input" id="toggleVis" checked>
                     <label class="custom-control-label" for="toggleVis"></label>
                 </div>
+                <div class="year-chart border" align="center">
+
+                </div>
             </div>
-			<div class="tile">
-				Visual #2
-            </div>
-			<div class="tile">
-				Visual #3
+			<div class="pie-chart" align="center">
             </div>
         </div>
         <!-- main content area end -->
@@ -223,7 +221,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-
+    <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
 
     <script lang="babel" type='text/babel'>
         let data;
@@ -231,7 +229,7 @@
         data = {{ data.incident_data | safe }};
 
         const drawBarChart = function (data) {
-            d3.selectAll('svg').remove();
+            {#d3.selectAll('svg').remove();#}
             console.log(data);
             //set the dimensions
             const margin = 200,
@@ -307,7 +305,7 @@
         };
 
         const drawScree  = function() {
-            d3.selectAll('svg').remove();
+            {#d3.selectAll('svg').remove();#}
             const margin = { top: 20, right: 50, bottom: 30, left: 50 },
             width = 800,
             height = 300;
@@ -345,7 +343,7 @@
 
             svg.append('g')
               .attr('class', 'x axis axis--x')
-              .attr('transform', `translate(0, ${height})`)
+              .attr("transform", "translate(0," + height + ")")
               .call(d3.axisBottom(x));
 
             svg.append('g')
@@ -483,12 +481,31 @@
             $('#toggleVis').change(function() {
                toggleVar =  toggleVar == 2 ? 1 : 2;
                console.log(toggleVar);
+               $(".year-chart").empty();
                drawVis(toggleVar);
             })
         });
 
         drawVis(toggleVar);
 
+        const drawEthincMix = function() {
+            var donut = donutChart()
+                        .width(800)
+                        .height(450)
+                        .cornerRadius(3) // sets how rounded the corners are on each slice
+                        .padAngle(0.015) // effectively dictates the gap between slices
+                        .variable('Distribution')
+                        .category('Race');
+
+            d3.csv("{{ url_for('static',filename='data_files/csv/shooting_racial_distribution.csv') }}", function(error, data) {
+                if (error) throw error;
+                d3.select('.pie-chart')
+                .datum(data) // bind data to the div
+                .call(donut); // draw chart in div
+            });
+        };
+
+        drawEthincMix();
     </script>
 </body>
 
