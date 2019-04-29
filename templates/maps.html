@@ -179,11 +179,8 @@
             <div class="year-chart border" align="center">
 				<div id="tooltip"></div>
             </div>
-			<div class="tile">
-				Visual #2
-            </div>
-			<div class="tile">
-				Visual #3
+			<div class="circular-chart" align="center">
+
             </div>
         </div>
         <!-- main content area end -->
@@ -219,12 +216,13 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
 
     <script lang="babel" type='text/babel'>
 		const tooltipHtml = function (n, cases){	/* function to create html content string in tooltip div. */
 			return "<h4>"+n+"</h4><table>"+
 				"<tr><td>Incidents:&nbsp;</td><td>"+(cases)+"</td></tr></table>";
-		}
+		};
 		
 		const drawBarUSChart = function () {
             //Append SVG to the plotchart div
@@ -240,7 +238,7 @@
 			d3.csv("{{ url_for('static',filename='data_files/csv/us_state_incidents.csv') }}", function (data) {				
 				data.forEach(function (d) {
 					us_state_data.push({"state": d.state, "cases": +d.cases});  
-				})
+				});
 	
 				//to find max value in an array
 				var sampleData = [];	/* Sample random data. */	
@@ -253,7 +251,7 @@
 					(d) => {
 						return d3.interpolateOranges(logScale(d))
 					}
-				)
+				);
 		
 				us_state_data.forEach(function(d){
 					uStatePaths.forEach(function (s) {
@@ -262,7 +260,7 @@
 							d.d = s.d;
 							d.id = s.id;
 						}
-					})
+					});
 
 					let cases = +d.cases;
 					
@@ -277,12 +275,70 @@
 				
 				/* draw states on id #statesvg */	
 				uStates.draw("#statesvg", sampleData, tooltipHtml);
-			})
+			});
 			d3.select(self.frameElement).style("height", "600px");
 				
         };
-		
+
+        const drawRadialBar = function() {
+            const margin = {top: 100, right: 0, bottom: 0, left: 0},
+            width = 460 - margin.left - margin.right,
+            height = 460 - margin.top - margin.bottom,
+            innerRadius = 90,
+            outerRadius = Math.min(width, height) / 2;
+
+            const svg = d3.select(".circular-chart")
+                        .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")");
+
+            d3.csv("{{ url_for('static',filename='data_files/csv/us_state_incidents.csv') }}", function(data) {
+
+  // Scales
+                const x = d3.scaleBand()
+                            .range([0, 2 * Math.PI])    // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
+                            .align(0)                  // This does nothing
+                            .domain(data.map(function(d) { return d.state; })); // The domain of the X axis is the list of states.
+                const y = d3.scaleRadial()
+                            .range([innerRadius, outerRadius])   // Domain will be define later.
+                            .domain([0, 60]); // Domain of Y is from 0 to the max seen in the data
+
+  // Add the bars
+                svg.append("g")
+                    .selectAll("path")
+                    .data(data)
+                    .enter()
+                    .append("path")
+                    .attr("fill", "#69b3a2")
+                    .attr("d", d3.arc()     // imagine your doing a part of a donut plot
+                    .innerRadius(innerRadius)
+                    .outerRadius(function(d) { return y(d.cases); })
+                    .startAngle(function(d) { return x(d.state); })
+                    .endAngle(function(d) { return x(d.state) + x.bandwidth(); })
+                    .padAngle(0.01)
+                    .padRadius(innerRadius));
+
+                svg.append("g")
+                    .selectAll("g")
+                    .data(data)
+                    .enter()
+                    .append("g")
+                    .attr("text-anchor", function(d) { return (x(d.state) + x.bandwidth() / 2 + Math.PI) % (2 * Math.PI) < Math.PI ? "end" : "start"; })
+                    .attr("transform", function(d) { return "rotate(" + ((x(d.state) + x.bandwidth() / 2) * 180 / Math.PI - 90) + ")"+"translate(" + (y(d.cases)+10) + ",0)"; })
+                    .append("text")
+                    .text(function(d){return(d.state)})
+                    .attr("transform", function(d) { return (x(d.state) + x.bandwidth() / 2 + Math.PI) % (2 * Math.PI) < Math.PI ? "rotate(180)" : "rotate(0)"; })
+                    .style("font-size", "11px")
+                    .attr("alignment-baseline", "middle")
+
+            });
+        };
+
+
 		drawBarUSChart();
+		drawRadialBar();
         
     </script>
 </body>
