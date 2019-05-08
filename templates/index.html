@@ -22,9 +22,18 @@
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/ethincmix.css') }}">
     <!-- modernizr css -->
     <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+	<!-- jquery latest version -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
 	<script>
 		function change_button(){
 			$('.page-container').toggleClass('sbar_collapsed2');
+		}
+		
+		function on_change(){
+			if($('.custom-control.custom-switch label').text() == 'Switch to Time Series Chart')
+				$('.custom-control.custom-switch label').text('Switch to Bar Chart');
+			else
+				$('.custom-control.custom-switch label').text('Switch to Time Series Chart');
 		}
 	</script>
 </head>
@@ -36,14 +45,42 @@
 	.border {
 		border:1px solid black;
 	}
-
-	.tile {
-		border:1px solid black;
-		width:50%;
-		min-height:100px;
-		float:left;
+	
+	.border-bottom {
+		border-bottom:1px solid #dee2e6;
+	}
+	
+	.label-text {
+		font-size:14px;
+		width:180px;
+		padding-top:2px;
+		text-align:left;
 	}
 
+	.tile {
+		width:33.3%;
+		height:100px;
+		float:left;
+		overflow:hidden
+	}
+	
+	.tile-header {
+		height:40%;
+		background:steelblue;
+		color:#ecf0f1;
+		display:flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.tile-content {
+		height:60%;
+		color:gray;
+		display:flex;
+		align-items: center;
+		justify-content: center;
+	}
+		
 	.tip {
 		padding:4px;
 		background:white;
@@ -151,7 +188,7 @@
             <div class="header-area">
                 <div class="row align-items-center">
                     <!-- nav and search button -->
-                    <div class="col-md-6 col-sm-8 clearfix">
+                    <div>
                         <div class="nav-btn pull-left">
                             <span></span>
                             <span></span>
@@ -159,6 +196,7 @@
                         </div>
                     </div>
                     <!-- profile info & task notification -->
+					<h3 style="color:gray; padding:0 0 0 350px">TRENDS AT A GLANCE</h3>
                 </div>
             </div>
             <!-- header area end -->
@@ -177,15 +215,49 @@
                 </div>
             </div>
             <div class="bar-scree">
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="toggleVis" checked>
-                    <label class="custom-control-label" for="toggleVis"></label>
+				<br>
+				<center><h3 style="color:gray">Distribution of the incidents over the years</h3></center>
+				<br>
+                <div class="year-chart" align="center">
                 </div>
-                <div class="year-chart border" align="center">
-
-                </div>
+				<div class="custom-control custom-switch border-bottom" align="center" style="padding-bottom:20px">
+					<input type="checkbox" class="custom-control-input" onchange="on_change()" id="toggleVis" checked>
+					<label class="custom-control-label label-text" for="toggleVis">Switch to Time Series Chart</label>
+				</div>
             </div>
-			<div class="pie-chart" align="center">
+			<div style="overflow:hidden">
+				<br>
+				<center><h3 style="color:gray">Key Figures (1966 - 2018)</h3></center>
+				<br>
+                <div class="tile border">
+					<div class="tile-header border">
+						<center><h5>Total Incidents</h5></center>
+					</div>
+					<div class="tile-content border">
+						<h5>428</h5>
+					</div>
+				</div>
+				<div class="tile border">
+					<div class="tile-header border">
+						<center><h5>Fatalities</h5></center>
+					</div>
+					<div class="tile-content border">
+						<h5>2165</h5>
+					</div>
+				</div>
+				<div class="tile border">
+					<div class="tile-header border">
+						<h5>Injuries</h5>
+					</div>
+					<div class="tile-content border">
+						<h5>2624</h5>
+					</div>
+				</div>
+            </div>
+			<div class="pie-chart border-bottom" align="center">
+				<br>
+				<h3 style="color:gray;">Distribution of the shooters race over the years</h3>
+				<br>
             </div>
         </div>
         <!-- main content area end -->
@@ -198,8 +270,6 @@
         <!-- footer area end-->
     </div>
     <!-- page container area end -->
-    <!-- jquery latest version -->
-    <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
     <!-- bootstrap 4 js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
@@ -257,9 +327,6 @@
 			let tip = d3.tip()
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
-						.html(function(d, i) {
-							return "<div class='tip border'><strong>Frequency:</strong> <span style='color:red'>" + incidentFrequency[i] + "</span></div>";
-						  });
 			
 			svg.call(tip);
 
@@ -300,8 +367,36 @@
                 .attr("height", function(d, i) {
                     return height - yScale(incidentFrequency[i]); })//Determining the height of the bars.
 				.style('cursor', 'pointer')
-				.on('mouseover', tip.show)
-				.on('mouseout', tip.hide)
+				.on('mouseover', function(d, i){
+					d3.select(this)
+					.attr("x", xScale(yearList[i]) - 3)
+					.attr("y", function(d) {
+						return yScale(incidentFrequency[i]) - 15
+					})      
+					.attr("width", xScale.bandwidth() + 6)
+					.attr("height", function(d) {
+						return height - yScale(incidentFrequency[i]) + 15;
+					})
+					.style("fill", "#FFA500");
+					
+					tip.html("<div class='tip border'><strong>Incidents:</strong> <span style='color:red'>" + incidentFrequency[i] + "</span></div>");
+					tip.show();
+				})
+				.on('mouseout', function(d, i){
+					d3.select(this)
+					.attr("x", xScale(d))
+					.attr("y", function(d) {
+						return yScale(incidentFrequency[i])
+					})      
+					.attr("width", xScale.bandwidth())
+					.attr("height", function(d) {
+						return height - yScale(incidentFrequency[i])
+					})
+					.style("fill", "steelblue")
+					.style('cursor', 'pointer');
+					
+					tip.hide();
+				})
         };
 
         const drawScree  = function() {
@@ -333,131 +428,132 @@
             .attr("transform", "translate(" + 50 + "," + 40 + ")");
 
             d3.csv("{{ url_for('static',filename='data_files/csv/scree_index.csv') }}", type, (error, data) => {
-            if (error) throw error;
-            console.log('hello');
-            console.log(data);
-            data.sort((a, b) => a.date - b.date);
+				if (error) throw error;
+				console.log('hello');
+				console.log(data);
+				data.sort((a, b) => a.date - b.date);
 
-            x.domain([data[0].date, data[data.length - 1].date]);
-            y.domain(d3.extent(data, d => d.count));
+				x.domain([data[0].date, data[data.length - 1].date]);
+				y.domain(d3.extent(data, d => d.count));
 
-            svg.append('g')
-              .attr('class', 'x axis axis--x')
-              .attr("transform", "translate(0," + height + ")")
-              .call(d3.axisBottom(x));
+				svg.append('g')
+				  .attr('class', 'x axis axis--x')
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(d3.axisBottom(x));
 
-            svg.append('g')
-              .attr('class', 'y axis axis--y')
-              .call(d3.axisLeft(y))
-                .append("text")
-                .attr("transform", "rotate(-90)")
-				.attr("x", -100)
-                .attr("y", -5)
-                .attr("dy", "-3.1em")
-                .attr("stroke", "black")
-                .style("fill", "black")
-                .style("font-size", "10px")
-                .text("INCIDENTS FREQUENCY");
+				svg.append('g')
+				  .attr('class', 'y axis axis--y')
+				  .call(d3.axisLeft(y))
+					.append("text")
+					.attr("transform", "rotate(-90)")
+					.attr("x", -100)
+					.attr("y", -5)
+					.attr("dy", "-3.1em")
+					.attr("stroke", "black")
+					.style("fill", "black")
+					.style("font-size", "10px")
+					.text("INCIDENTS FREQUENCY");
 
-            // style the axes
-            d3.selectAll('.axis path')
-              .styles({
-                fill: 'none',
-                stroke: '#000',
-                'shape-rendering': 'crispEdges'
-              });
+				// style the axes
+				d3.selectAll('.axis path')
+				  .styles({
+					fill: 'none',
+					stroke: '#000',
+					'shape-rendering': 'crispEdges'
+				  });
 
-            d3.selectAll('.axis line')
-              .styles({
-                fill: 'none',
-                stroke: '#000',
-                'shape-rendering': 'crispEdges'
-              });
+				d3.selectAll('.axis line')
+				  .styles({
+					fill: 'none',
+					stroke: '#000',
+					'shape-rendering': 'crispEdges'
+				  });
 
-            d3.selectAll('.axis--x path')
-              .style('display', 'none');
+				d3.selectAll('.axis--x path')
+				  .style('display', 'none');
 
-            svg.append('path')
-              .datum(data)
-              .attr('class', 'line')
-              .attr('d', line);
+				svg.append('path')
+				  .datum(data)
+				  .attr('class', 'line')
+				  .attr('d', line);
 
-            const focus = svg.append('g')
-              .attr('class', 'focus')
-              .style('display', 'none');
+				const focus = svg.append('g')
+				  .attr('class', 'focus')
+				  .style('display', 'none');
 
-            focus.append('circle')
-              .attr('r', 4.5);
+				focus.append('line')
+				  .classed('x', true);
 
-            focus.append('line')
-              .classed('x', true);
+				focus.append('line')
+				  .classed('y', true);
 
-            focus.append('line')
-              .classed('y', true);
+				focus.append('text')
+				  .attr('x', 9)
+				  .attr('dy', '.35em')
+				  .attr('font-size', '12px')
+				  .attr('font-weight', 'bold');
+				 
+				focus.append('circle')
+				  .attr('r', 4.5);
 
-            focus.append('text')
-              .attr('x', 9)
-              .attr('dy', '.35em');
+				svg.append('rect')
+				  .attr('class', 'overlay')
+				  .attr('width', width)
+				  .attr('height', height)
+				  .on('mouseover', () => focus.style('display', null))
+				  .on('mouseout', () => focus.style('display', 'none'))
+				  .on('mousemove', mousemove);
 
-            svg.append('rect')
-              .attr('class', 'overlay')
-              .attr('width', width)
-              .attr('height', height)
-              .on('mouseover', () => focus.style('display', null))
-              .on('mouseout', () => focus.style('display', 'none'))
-              .on('mousemove', mousemove);
+				d3.selectAll('.line')
+				  .styles({
+					fill: 'none',
+					stroke: 'steelblue',
+					'stroke-width': '1.5px'
+				  });
 
-            d3.selectAll('.line')
-              .styles({
-                fill: 'none',
-                stroke: 'steelblue',
-                'stroke-width': '1.5px'
-              });
+				d3.select('.overlay')
+				  .styles({
+					fill: 'none',
+					'pointer-events': 'all'
+				  });
 
-            d3.select('.overlay')
-              .styles({
-                fill: 'none',
-                'pointer-events': 'all'
-              });
+				d3.selectAll('.focus')
+				  .style('opacity', 0.7);
 
-            d3.selectAll('.focus')
-              .style('opacity', 0.7);
+				d3.selectAll('.focus circle')
+				  .styles({
+					fill: '#FFA500',
+				  });
 
-            d3.selectAll('.focus circle')
-              .styles({
-                fill: 'none',
-                stroke: 'black'
-              });
+				d3.selectAll('.focus line')
+				  .styles({
+					fill: 'none',
+					'stroke': 'black',
+					'stroke-width': '1.5px',
+					'stroke-dasharray': '3 3'
+				  });
 
-            d3.selectAll('.focus line')
-              .styles({
-                fill: 'none',
-                'stroke': 'black',
-                'stroke-width': '1.5px',
-                'stroke-dasharray': '3 3'
-              });
+				function mousemove() {
+					const x0 = x.invert(d3.mouse(this)[0]);
+					const i = bisectDate(data, x0, 1);
+					const d0 = data[i - 1];
+					const d1 = data[i];
+					const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+					focus.attr('transform', `translate(${x(d.date)}, ${y(d.count)})`);
+					focus.select('line.x')
+					.attr('x1', 0)
+					.attr('x2', -x(d.date))
+					.attr('y1', 0)
+					.attr('y2', 0);
 
-            function mousemove() {
-                const x0 = x.invert(d3.mouse(this)[0]);
-                const i = bisectDate(data, x0, 1);
-                const d0 = data[i - 1];
-                const d1 = data[i];
-                const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-                focus.attr('transform', `translate(${x(d.date)}, ${y(d.count)})`);
-                focus.select('line.x')
-                .attr('x1', 0)
-                .attr('x2', -x(d.date))
-                .attr('y1', 0)
-                .attr('y2', 0);
+					focus.select('line.y')
+					.attr('x1', 0)
+					.attr('x2', 0)
+					.attr('y1', 0)
+					.attr('y2', height - y(d.count));
 
-                focus.select('line.y')
-                .attr('x1', 0)
-                .attr('x2', 0)
-                .attr('y1', 0)
-                .attr('y2', height - y(d.count));
-
-                focus.select('text').text(d.count);
-            }
+					focus.select('text').text(d.count);
+				}
             });
 
             function type(d) {

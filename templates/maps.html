@@ -150,7 +150,7 @@
             <div class="header-area">
                 <div class="row align-items-center">
                     <!-- nav and search button -->
-                    <div class="col-md-6 col-sm-8 clearfix">
+                    <div>
                         <div class="nav-btn pull-left">
                             <span></span>
                             <span></span>
@@ -158,6 +158,7 @@
                         </div>
                     </div>
                     <!-- profile info & task notification -->
+					<h3 style="color:gray; padding:0 0 0 350px">GEOGRAPHICAL TRENDS</h3>
                 </div>
             </div>
             <!-- header area end -->
@@ -177,10 +178,15 @@
             </div>
             <!-- page title area end -->
             <div class="year-chart border" align="center">
+				<br>
+				<h3 style="color:gray">Countrywide distribution of mass shooting incidents</h3>
+				<br>
 				<div id="tooltip"></div>
             </div>
 			<div class="circular-chart" align="center">
-
+				<br>
+				<br>
+				<h3 style="color:gray">Statewide distribution of mass shooting incidents</h3>
             </div>
         </div>
         <!-- main content area end -->
@@ -286,6 +292,7 @@
             height = 460 - margin.top - margin.bottom,
             innerRadius = 90,
             outerRadius = Math.min(width, height) / 2;
+			
 
             const svg = d3.select(".circular-chart")
                         .append("svg")
@@ -304,7 +311,42 @@
                 const y = d3.scaleRadial()
                             .range([innerRadius, outerRadius])   // Domain will be define later.
                             .domain([0, 60]); // Domain of Y is from 0 to the max seen in the data
+				
+				function toolTip(selection) {
 
+					// add tooltip (svg circle element) when mouse enters label or slice
+					selection.on('mouseenter', function (data) {
+
+						svg.append('text')
+							.attr('class', 'toolCircle')
+							.attr('dy', -15) // hard-coded. can adjust this to adjust text vertical alignment in tooltip
+							.html(toolTipHTML(data)) // add text to the circle.
+							.style('font-size', '.9em')
+							.style('text-anchor', 'middle'); // centres text in tooltip
+
+						svg.append('circle')
+							.attr('class', 'toolCircle')
+							.attr('r', outerRadius * 0.45) // radius of tooltip circle
+							.style('fill', '#1abc9c') // colour based on category mouse is over
+							.style('fill-opacity', 0.35);
+
+					});
+
+					// remove the tooltip when mouse leaves the slice/label
+					selection.on('mouseout', function () {
+						d3.selectAll('.toolCircle').remove();
+					});
+				}
+				
+				function toolTipHTML(data) {
+					console.log(data)
+					var tip = '',
+
+					tip = '<tspan x="0" dy="0.1em">State: ' + data.state + '</tspan>';
+					tip += '<tspan x="0" dy="1.3em">Incidents: ' + data.cases + '</tspan>';
+						
+					return tip;
+				}
   // Add the bars
                 svg.append("g")
                     .selectAll("path")
@@ -312,13 +354,15 @@
                     .enter()
                     .append("path")
                     .attr("fill", "#69b3a2")
+					.style("cursor", "pointer")
                     .attr("d", d3.arc()     // imagine your doing a part of a donut plot
                     .innerRadius(innerRadius)
                     .outerRadius(function(d) { return y(d.cases); })
                     .startAngle(function(d) { return x(d.state); })
                     .endAngle(function(d) { return x(d.state) + x.bandwidth(); })
                     .padAngle(0.01)
-                    .padRadius(innerRadius));
+                    .padRadius(innerRadius))
+					.call(toolTip);
 
                 svg.append("g")
                     .selectAll("g")
