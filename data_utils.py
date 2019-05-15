@@ -54,6 +54,8 @@ def get_incidents_per_state(data):
                         'state' : row['state'],
                         'cases'  : str(row['cases'])[:-2]
                     }
+        if state_obj['cases'] == 'n':
+            state_obj['cases'] = '0'
         result_list.append(state_obj)
     return result_list
 
