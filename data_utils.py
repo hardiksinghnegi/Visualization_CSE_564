@@ -30,22 +30,31 @@ def get_incidents_per_year(data):
 
 
 def get_incidents_per_state(data):
+    state_list = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","D.C.","Delaware",
+                  "Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana",
+                  "Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana",
+                  "Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina",
+                  "North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","South Carolina","South Dakota","Tennessee",
+                  "Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]
+
+    state_df = pd.DataFrame(state_list, columns=['state'])
     csv_df = data[['State']]
     tmp = csv_df.groupby('State').size()
+
     df = tmp.to_frame()
     df = tmp.reset_index(name = 'cases')
     df.rename(columns={'State':'state'}, inplace=True)
 
+    res_df = pd.merge(state_df, df, how='left', on=['state'])
+
     result_list = []
 
-    for index, row in df.iterrows():
+    for index, row in res_df.iterrows():
         state_obj = {
                         'state' : row['state'],
-                        'cases'  : str(row['cases'])
+                        'cases'  : str(row['cases'])[:-2]
                     }
-
         result_list.append(state_obj)
-
     return result_list
 
 

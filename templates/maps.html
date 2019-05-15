@@ -245,7 +245,7 @@
 		data = {{ data.init_data | safe }};
 
 		console.log(data);
-		
+
 		const getData = function(start, end){
 			var postData = $.ajax({
 				url: 'getStateDataByYear',
@@ -360,6 +360,10 @@
         };
 
 		const tooltipHtml = function (n, cases){	/* function to create html content string in tooltip div. */
+
+		    if (isNaN(cases)){
+		        cases = 0;
+            }
 			return "<h4>"+n+"</h4><table>"+
 				"<tr><td>Incidents:&nbsp;</td><td>"+(cases)+"</td></tr></table>";
 		};
