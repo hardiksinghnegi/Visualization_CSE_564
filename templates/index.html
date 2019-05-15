@@ -310,7 +310,7 @@
         data = {{ data.incident_data | safe }};
 
         const drawTimeline = function() {
-            let margin = {top: 10, right: 7, bottom: 10, left: 10},
+            let margin = {top: 10, right: 40, bottom: 10, left: 10},
                 width = 1000,
                 height = 50;
 
@@ -325,7 +325,7 @@
                         .attr("height", height + margin.top + margin.bottom)
 						.attr('class', 'timeline-svg')
                         .append("g")
-                        .attr("transform", "translate(" + 10 + "," + 10 + ")");
+                        .attr("transform", "translate(" + 30 + "," + 10 + ")");
 
             svg.append("g")
                 .attr("class", "axis axis--grid")
@@ -346,7 +346,8 @@
                 .attr("text-anchor", null)
                 .selectAll("text")
                 .attr("transform", "rotate(-90)" )
-                .attr("x", 6);
+                .attr("x", 6)
+				.attr("y", -12);
 
             let brush = d3.brushX()
                             .extent([[0, 0], [width, height]])
