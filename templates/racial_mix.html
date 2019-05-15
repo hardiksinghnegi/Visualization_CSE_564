@@ -177,7 +177,7 @@
                         </div>
                     </div>
                     <!-- profile info & task notification -->
-					<h3 style="color:gray; padding:0 0 0 350px">GEOGRAPHICAL TRENDS</h3>
+					<h3 style="color:gray; padding:0 0 0 350px">ETHNIC TRENDS</h3>
                 </div>
             </div>
             <!-- header area end -->
@@ -234,24 +234,118 @@
     <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
 
     <script lang="babel" type='text/babel'>
-     const drawEthincMix = function() {
-            var donut = donutChart()
-                        .width(800)
-                        .height(450)
-                        .cornerRadius(3) // sets how rounded the corners are on each slice
-                        .padAngle(0.015) // effectively dictates the gap between slices
-                        .variable('Distribution')
-                        .category('Race');
+        const drawTimeline = function() {
+            let margin = {top: 10, right: 12, bottom: 10, left: 10},
+                width = 1200,
+                height = 50;
 
-            d3.csv("{{ url_for('static',filename='data_files/csv/shooting_racial_distribution.csv') }}", function(error, data) {
-                if (error) throw error;
-                d3.select('.year-chart')
-                .datum(data) // bind data to the div
-                .call(donut); // draw chart in div
-            });
+            let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
+
+            let x = d3.scaleTime()
+                        .domain([new Date(1966, 1, 1), new Date(2018, 12, 30) - 1])
+                        .rangeRound([0, width]);
+
+            let svg = d3.select(".timeline-filter").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + 10 + "," + 10 + ")");
+
+            svg.append("g")
+                .attr("class", "axis axis--grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x)
+                .ticks(d3.timeYear, 1)
+                .tickSize(-height)
+                .tickFormat(function() { return null; }))
+                .selectAll(".tick")
+                .classed("tick--minor", function(d) { return d.getYear(); });
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x)
+                .ticks(d3.timeYear)
+                .tickPadding(0))
+                .attr("text-anchor", null)
+                .selectAll("text")
+                .attr("transform", "rotate(-90)" )
+                .attr("x", 6);
+
+            let brush = d3.brushX()
+                            .extent([[0, 0], [width, height]])
+                            .on("brush", brushmoved)
+                            .on("end", brushended);
+
+            let yearBrush = svg.append("g")
+                                .attr("class", "brush")
+                                .call(brush);
+
+            // https://github.com/crossfilter/crossfilter/blob/gh-pages/index.html#L466
+            var brushResizePath = function(d) {
+                var e = +(d.type == "e"),
+                    x = e ? 1 : -1,
+                    y = height / 2;
+                return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) + "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+            };
+
+
+            var handle = yearBrush.selectAll(".handle--custom")
+            .data([{type: "w"}, {type: "e"}])
+            .enter().append("path")
+            .attr("class", "handle--custom")
+            .attr("stroke", "#000")
+            .attr("cursor", "ew-resize")
+            .attr("d", brushResizePath);
+
+            yearBrush.call(brush.move, range.map(x));
+
+            function brushended() {
+                if (!d3.event.sourceEvent) return; // Only transition after input.
+                if (!d3.event.selection) return; // Ignore empty selections.
+                var d0 = d3.event.selection.map(x.invert),
+                d1 = d0.map(d3.timeYear.round);
+
+  // If empty when rounded, use floor & ceil instead.
+                if (d1[0] >= d1[1]) {
+                    d1[0] = d3.timeYear.floor(d0[0]);
+                    d1[1] = d3.timeYear.offset(d1[0]);
+                }
+
+                console.log(d1);
+                d3.select(this).transition().call(d3.event.target.move, d1.map(x));
+
+            }
+
+            function brushmoved() {
+                let s = d3.event.selection;
+                handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
+
+            }
+
+
         };
 
-     drawEthincMix();
+         drawTimeline();
+
+         const drawEthincMix = function() {
+                var donut = donutChart()
+                            .width(800)
+                            .height(450)
+                            .cornerRadius(3) // sets how rounded the corners are on each slice
+                            .padAngle(0.015) // effectively dictates the gap between slices
+                            .variable('Distribution')
+                            .category('Race');
+
+                d3.csv("{{ url_for('static',filename='data_files/csv/shooting_racial_distribution.csv') }}", function(error, data) {
+                    if (error) throw error;
+                    d3.select('.year-chart')
+                    .datum(data) // bind data to the div
+                    .call(donut); // draw chart in div
+                });
+            };
+
+         drawEthincMix();
     </script>
 </body>
 
