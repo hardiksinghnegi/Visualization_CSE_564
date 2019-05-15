@@ -553,21 +553,21 @@
 					.text("INCIDENTS FREQUENCY");
 
 				// style the axes
-				d3.selectAll('.axis path')
+				d3.selectAll('div.year-chart .axis path')
 				  .styles({
 					fill: 'none',
 					stroke: '#000',
 					'shape-rendering': 'crispEdges'
 				  });
 
-				d3.selectAll('.axis line')
+				d3.selectAll('div.year-chart .axis line')
 				  .styles({
 					fill: 'none',
 					stroke: '#000',
 					'shape-rendering': 'crispEdges'
 				  });
 
-				d3.selectAll('.axis--x path')
+				d3.selectAll('div.year-chart .axis--x path')
 				  .style('display', 'none');
 
 				svg.append('path')
@@ -595,7 +595,7 @@
 				  .attr('r', 4.5);
 
 				svg.append('rect')
-				  .attr('class', 'overlay')
+				  .attr('class', 'my-overlay')
 				  .attr('width', width)
 				  .attr('height', height)
 				  .on('mouseover', () => focus.style('display', null))
@@ -609,7 +609,7 @@
 					'stroke-width': '1.5px'
 				  });
 
-				d3.select('.overlay')
+				d3.select('.my-overlay')
 				  .styles({
 					fill: 'none',
 					'pointer-events': 'all'
