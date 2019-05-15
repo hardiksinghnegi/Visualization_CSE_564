@@ -305,22 +305,25 @@
     <script lang="babel" type='text/babel'>
         let data;
         let toggleVar = 1;
+		let start;
+		let end;
         data = {{ data.incident_data | safe }};
 
         const drawTimeline = function() {
-            let margin = {top: 10, right: 12, bottom: 10, left: 10},
-                width = 1200,
-                height = 100;
+            let margin = {top: 10, right: 7, bottom: 10, left: 10},
+                width = 1000,
+                height = 50;
 
-            let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
+            let range = [new Date(1966, 1, 1), new Date(2019, 12, 30) - 1];
 
             let x = d3.scaleTime()
-                        .domain([new Date(1966, 1, 1), new Date(2018, 12, 30) - 1])
+                        .domain(range)
                         .rangeRound([0, width]);
 
-            let svg = d3.select(".timeline-filter").append("svg")
+            let svg = d3.select("div.timeline-filter").append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom)
+						.attr('class', 'timeline-svg')
                         .append("g")
                         .attr("transform", "translate(" + 10 + "," + 10 + ")");
 
@@ -386,8 +389,10 @@
                 }
 
                 console.log(d1);
+				start = d1[0]
+				end = d1[1]
                 d3.select(this).transition().call(d3.event.target.move, d1.map(x));
-
+				drawVis(toggleVar, start, end);
             }
 
             function brushmoved() {
@@ -399,10 +404,17 @@
 
         };
 
-        drawTimeline();
-
-        const drawBarChart = function (data) {
-            console.log(data);
+        const drawBarChart = function (data, b, e) {
+            //console.log(data);
+			let start = b.getFullYear()
+			let end = e.getFullYear()
+			console.log(start)
+			let filteredData = {}
+			$.each( data, function( key, value ) {
+				if(key >= start && key <= end)
+					filteredData[key] = value
+			});
+			console.log(filteredData);
             //set the dimensions
             const margin = 200,
             width = 900 - 100,
@@ -423,8 +435,8 @@
                          .attr("transform", "translate(" + 50 + "," + 40 + ")");
 
 
-            const yearList = Object.keys(data);
-            const incidentFrequency =  Object.values(data);
+            const yearList = Object.keys(filteredData);
+            const incidentFrequency =  Object.values(filteredData);
 			
 			let tip = d3.tip()
 						.attr('class', 'd3-tip')
@@ -501,7 +513,9 @@
 				})
         };
 
-        const drawScree  = function() {
+        const drawScree  = function(startYear, endYear) {
+			console.log(startYear.getFullYear())
+			console.log(endYear.getFullYear())
             const margin = { top: 20, right: 50, bottom: 30, left: 50 },
             width = 800,
             height = 300;
@@ -530,12 +544,18 @@
 
             d3.csv("{{ url_for('static',filename='data_files/csv/scree_index.csv') }}", type, (error, data) => {
 				if (error) throw error;
-				console.log('hello');
 				console.log(data);
 				data.sort((a, b) => a.date - b.date);
-
-				x.domain([data[0].date, data[data.length - 1].date]);
-				y.domain(d3.extent(data, d => d.count));
+				
+				let filteredData = []
+				for(var i = 0; i < data.length; i++) {
+					if(data[i]['date'].getFullYear() >= startYear.getFullYear() && data[i]['date'].getFullYear() <= endYear.getFullYear())
+						filteredData.push(data[i])
+				}
+				console.log(filteredData)
+				
+				x.domain([filteredData[0].date, filteredData[filteredData.length - 1].date]);
+				y.domain(d3.extent(filteredData, d => d.count));
 
 				svg.append('g')
 				  .attr('class', 'x axis axis--x')
@@ -574,8 +594,9 @@
 				  .style('display', 'none');
 
 				svg.append('path')
-				  .datum(data)
+				  .datum(filteredData)
 				  .attr('class', 'line')
+				  .style("fill", "none")
 				  .attr('d', line);
 
 				const focus = svg.append('g')
@@ -636,9 +657,9 @@
 
 				function mousemove() {
 					const x0 = x.invert(d3.mouse(this)[0]);
-					const i = bisectDate(data, x0, 1);
-					const d0 = data[i - 1];
-					const d1 = data[i];
+					const i = bisectDate(filteredData, x0, 1);
+					const d0 = filteredData[i - 1];
+					const d1 = filteredData[i];
 					const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 					focus.attr('transform', `translate(${x(d.date)}, ${y(d.count)})`);
 					focus.select('line.x')
@@ -664,13 +685,13 @@
             }
         };
 
-        const drawVis = function(toggleIndex) {
-
+        const drawVis = function(toggleIndex, yearStart, yearEnd) {
+			document.querySelector(".year-chart").innerHTML = '';
             if (toggleIndex == 1) {
-                drawBarChart(data);
+                drawBarChart(data, yearStart, yearEnd);
             }
             else {
-                drawScree(data);
+                drawScree(yearStart, yearEnd);
             }
         };
 
@@ -679,28 +700,15 @@
                toggleVar =  toggleVar == 2 ? 1 : 2;
                console.log(toggleVar);
                document.querySelector(".year-chart").innerHTML = '';
-               drawVis(toggleVar);
+               drawVis(toggleVar, start, end);
             })
         });
+		
+		let yearStart = new Date(1967, 1, 1)
+		let yearEnd = new Date(2019, 1, 1)
+        drawVis(toggleVar, yearStart, yearEnd);
+		drawTimeline()
 
-        drawVis(toggleVar);
-
-        const drawEthincMix = function() {
-            var donut = donutChart()
-                        .width(800)
-                        .height(450)
-                        .cornerRadius(3) // sets how rounded the corners are on each slice
-                        .padAngle(0.015) // effectively dictates the gap between slices
-                        .variable('Distribution')
-                        .category('Race');
-
-            d3.csv("{{ url_for('static',filename='data_files/csv/shooting_racial_distribution.csv') }}", function(error, data) {
-                if (error) throw error;
-                d3.select('.pie-chart')
-                .datum(data) // bind data to the div
-                .call(donut); // draw chart in div
-            });
-        };
     </script>
 </body>
 
