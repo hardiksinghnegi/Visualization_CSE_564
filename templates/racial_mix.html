@@ -1,0 +1,258 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>CSE564 Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png"  href= "{{ url_for('static',filename='styles/images/icon/favicon.ico') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/themify-icons.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/metisMenu.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/slicknav.min.css') }}">
+    <!-- amchart css -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <!-- others css -->
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/typography.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/default-css.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/styles.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/responsive.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/ethincmix.css') }}">
+    <!-- modernizr css -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+	<script>
+		function change_button(){
+			$('.page-container').toggleClass('sbar_collapsed2');
+		}
+	</script>
+</head>
+
+<style> /* set the CSS */
+
+	.bar { fill: steelblue; }
+
+	.border {
+		border:1px solid black;
+	}
+
+	.tile {
+		border:1px solid black;
+		width:50%;
+		min-height:100px;
+		float:left;
+	}
+
+	.tip {
+		padding:4px;
+		background:white;
+		border-radius:6px;
+	}
+
+	.state{
+		fill: none;
+		stroke: #a9a9a9;
+		stroke-width: 1;
+	}
+
+	.state:hover{
+		fill-opacity:0.5;
+	}
+
+	#tooltip {
+		position: absolute;
+		margin: 10px;
+		font: 12px sans-serif;
+		border: 1px;
+		pointer-events: none;
+	}
+
+	#tooltip h4{
+		margin:0;
+		font-size:18px;
+		color: plum;
+	}
+
+	#tooltip{
+		position: absolute;
+		margin: 10px;
+		font: 14px sans-serif;
+		pointer-events: none;
+		background:rgba(0,0,0,0.9);
+		border:1px solid grey;
+		border-radius:5px;
+		width:auto;
+		padding:4px;
+		color:white;
+		opacity:0;
+	}
+	#tooltip table{
+		table-layout:fixed;
+	}
+
+	#tooltip tr td{
+		padding:0;
+		margin:0;
+	}
+
+	#tooltip tr td:nth-child(1){
+		width:50px;
+	}
+
+	#tooltip tr td:nth-child(2){
+		text-align:center;
+	}
+
+    .axis--grid .domain {
+        fill: #ddd;
+        stroke: none;
+    }
+
+    .axis--x .domain,
+    .axis--grid .tick line {
+        stroke: #fff;
+    }
+
+    .axis--grid .tick--minor line {
+        stroke-opacity: .5;
+    }
+
+
+</style>
+
+<body onresize="change_button()">
+    <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <!-- preloader area start -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+    <!-- preloader area end -->
+    <!-- page container area start -->
+    <div class="page-container">
+        <!-- sidebar menu area start -->
+        <div class="sidebar-menu">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="index.html"><img src="{{ url_for('static',filename='styles/images/icon/sbu_logo_dark.png') }}" width="100" alt="logo"></a>
+                </div>
+            </div>
+            <div class="main-menu">
+                <div class="menu-inner">
+                    <nav>
+                        <ul class="metismenu" id="menu">
+                            <li>
+                                <a href="home" aria-expanded="true"><i class="ti-pie-chart"></i><span>Home</span></a>
+                            </li>
+							<li>
+                                <a href="javascript:void(0)" aria-expanded="true"><i class="ti-pie-chart"></i><span>Map Charts</span></a>
+                                <ul class="collapse">
+                                    <li><a href="maps">Incidents Chart</a></li>
+                                    <li><a href="#">Race Chart</a></li>
+                                    <li><a href="#">pie chart</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="rmix" aria-expanded="true"><i class="ti-pie-chart"></i><span>Racial Distribution</span></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar menu area end -->
+        <!-- main content area start -->
+        <div class="main-content">
+            <!-- header area start -->
+            <div class="header-area">
+                <div class="row align-items-center">
+                    <!-- nav and search button -->
+                    <div>
+                        <div class="nav-btn pull-left">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <!-- profile info & task notification -->
+					<h3 style="color:gray; padding:0 0 0 350px">GEOGRAPHICAL TRENDS</h3>
+                </div>
+            </div>
+            <!-- header area end -->
+            <!-- page title area start -->
+            <div class="page-title-area">
+            </div>
+            <div class="timeline-filter">
+
+            </div>
+            <!-- page title area end -->
+            <div class="year-chart border" align="center">
+				<br>
+				<h3 style="color:gray">Ethnic Distribution of Shooters</h3>
+				<br>
+                <div class="ethnic-mix">
+
+                </div>
+            </div>
+        </div>
+        <!-- main content area end -->
+        <!-- footer area start-->
+        <footer>
+            <div class="footer-area">
+                <p>Dashboard developed by Hardik Singh Negi & Ayush Garg</p>
+            </div>
+        </footer>
+        <!-- footer area end-->
+    </div>
+    <!-- page container area end -->
+    <!-- jquery latest version -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
+    <!-- bootstrap 4 js -->
+    <script src="{{ url_for('static',filename='styles/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/metisMenu.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/jquery.slimscroll.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/jquery.slicknav.min.js') }}"></script>
+
+    <!-- others plugins -->
+    <script src="{{ url_for('static',filename='styles/js/plugins.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/scripts.js') }}"></script>
+
+	<!-- US States -->
+	<script src="{{ url_for('static',filename='styles/js/uStates.js') }}"></script>
+
+    <!-- load the d3.js library -->
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+    <script src='https://npmcdn.com/babel-core@5.8.34/browser.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
+    <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
+
+    <script lang="babel" type='text/babel'>
+     const drawEthincMix = function() {
+            var donut = donutChart()
+                        .width(800)
+                        .height(450)
+                        .cornerRadius(3) // sets how rounded the corners are on each slice
+                        .padAngle(0.015) // effectively dictates the gap between slices
+                        .variable('Distribution')
+                        .category('Race');
+
+            d3.csv("{{ url_for('static',filename='data_files/csv/shooting_racial_distribution.csv') }}", function(error, data) {
+                if (error) throw error;
+                d3.select('.year-chart')
+                .datum(data) // bind data to the div
+                .call(donut); // draw chart in div
+            });
+        };
+
+     drawEthincMix();
+    </script>
+</body>
+
+</html>

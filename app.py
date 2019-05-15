@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect, Response, jsonify
 app = Flask(__name__)
 
 
-@app.route("/home", methods = ['POST', 'GET'])
+@app.route("/home", methods=['POST', 'GET'])
 def index():
     """
         Main Index page
@@ -23,12 +23,17 @@ def index():
     return render_template('index.html', data=data)
 
 
-@app.route("/maps", methods = ['POST', 'GET'])
+@app.route("/maps", methods=['POST', 'GET'])
 def data_maps():
     """
         Regional Content / Maps page
     """
     return render_template('maps.html')
+
+
+@app.route("/rmix", methods=['POST', 'GET'])
+def racial_mix():
+    return render_template('racial_mix.html')
 
 
 if __name__ == "__main__":

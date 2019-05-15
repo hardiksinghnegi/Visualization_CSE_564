@@ -189,7 +189,10 @@
                                     <li><a href="#">Race Chart</a></li>
                                     <li><a href="#">pie chart</a></li>
                                 </ul>
-                            </li>							
+                            </li>
+                            <li>
+                                <a href="rmix" aria-expanded="true"><i class="ti-pie-chart"></i><span>Racial Distribution</span></a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -390,6 +393,7 @@
             function brushmoved() {
                 let s = d3.event.selection;
                 handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
+
             }
 
 
@@ -398,7 +402,6 @@
         drawTimeline();
 
         const drawBarChart = function (data) {
-            {#d3.selectAll('svg').remove();#}
             console.log(data);
             //set the dimensions
             const margin = 200,

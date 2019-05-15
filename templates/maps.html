@@ -103,6 +103,21 @@
 		text-align:center;
 	}
 
+    .axis--grid .domain {
+        fill: #ddd;
+        stroke: none;
+    }
+
+    .axis--x .domain,
+    .axis--grid .tick line {
+        stroke: #fff;
+    }
+
+    .axis--grid .tick--minor line {
+        stroke-opacity: .5;
+    }
+
+
 </style>
 
 <body onresize="change_button()">
@@ -137,7 +152,10 @@
                                     <li><a href="#">Race Chart</a></li>
                                     <li><a href="#">pie chart</a></li>
                                 </ul>
-                            </li>							
+                            </li>
+                            <li>
+                                <a href="rmix" aria-expanded="true"><i class="ti-pie-chart"></i><span>Racial Distribution</span></a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -164,17 +182,9 @@
             <!-- header area end -->
             <!-- page title area start -->
             <div class="page-title-area">
-                <div class="row align-items-center">
-                    <div class="col-sm-6" style="padding:15px 0 15px 0">
-                        <div class="breadcrumbs-area clearfix">
-                            <h4 class="page-title pull-left">Maps</h4>
-                            <ul class="breadcrumbs pull-left">
-                                <li><a href="home">Home</a></li>
-                                <li><span>Maps</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div class="timeline-filter">
+
             </div>
             <!-- page title area end -->
             <div class="year-chart border" align="center">
@@ -225,6 +235,100 @@
     <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
 
     <script lang="babel" type='text/babel'>
+        const drawTimeline = function() {
+            let margin = {top: 10, right: 12, bottom: 10, left: 10},
+                width = 1200,
+                height = 100;
+
+            let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
+
+            let x = d3.scaleTime()
+                        .domain([new Date(1966, 1, 1), new Date(2018, 12, 30) - 1])
+                        .rangeRound([0, width]);
+
+            let svg = d3.select(".timeline-filter").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + 10 + "," + 10 + ")");
+
+            svg.append("g")
+                .attr("class", "axis axis--grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x)
+                .ticks(d3.timeYear, 1)
+                .tickSize(-height)
+                .tickFormat(function() { return null; }))
+                .selectAll(".tick")
+                .classed("tick--minor", function(d) { return d.getYear(); });
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x)
+                .ticks(d3.timeYear)
+                .tickPadding(0))
+                .attr("text-anchor", null)
+                .selectAll("text")
+                .attr("transform", "rotate(-90)" )
+                .attr("x", 6);
+
+            let brush = d3.brushX()
+                            .extent([[0, 0], [width, height]])
+                            .on("brush", brushmoved)
+                            .on("end", brushended);
+
+            let yearBrush = svg.append("g")
+                                .attr("class", "brush")
+                                .call(brush);
+
+            // https://github.com/crossfilter/crossfilter/blob/gh-pages/index.html#L466
+            var brushResizePath = function(d) {
+                var e = +(d.type == "e"),
+                    x = e ? 1 : -1,
+                    y = height / 2;
+                return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) + "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+            };
+
+
+            var handle = yearBrush.selectAll(".handle--custom")
+            .data([{type: "w"}, {type: "e"}])
+            .enter().append("path")
+            .attr("class", "handle--custom")
+            .attr("stroke", "#000")
+            .attr("cursor", "ew-resize")
+            .attr("d", brushResizePath);
+
+            yearBrush.call(brush.move, range.map(x));
+
+            function brushended() {
+                if (!d3.event.sourceEvent) return; // Only transition after input.
+                if (!d3.event.selection) return; // Ignore empty selections.
+                var d0 = d3.event.selection.map(x.invert),
+                d1 = d0.map(d3.timeYear.round);
+
+  // If empty when rounded, use floor & ceil instead.
+                if (d1[0] >= d1[1]) {
+                    d1[0] = d3.timeYear.floor(d0[0]);
+                    d1[1] = d3.timeYear.offset(d1[0]);
+                }
+
+                console.log(d1);
+                d3.select(this).transition().call(d3.event.target.move, d1.map(x));
+
+            }
+
+            function brushmoved() {
+                let s = d3.event.selection;
+                handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
+
+            }
+
+
+        };
+
+        drawTimeline();
+
 		const tooltipHtml = function (n, cases){	/* function to create html content string in tooltip div. */
 			return "<h4>"+n+"</h4><table>"+
 				"<tr><td>Incidents:&nbsp;</td><td>"+(cases)+"</td></tr></table>";
