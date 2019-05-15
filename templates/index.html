@@ -305,8 +305,8 @@
     <script lang="babel" type='text/babel'>
         let data;
         let toggleVar = 1;
-		let start;
-		let end;
+		let start = new Date(1967, 1, 1);
+		let end = new Date(2019, 1, 1);
         data = {{ data.incident_data | safe }};
 
         const drawTimeline = function() {
