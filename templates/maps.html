@@ -235,22 +235,41 @@
     <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
 
     <script lang="babel" type='text/babel'>
+		let toggleVar = 1;
+		let yearStart = new Date(1966, 1, 1);
+		let yearEnd = new Date(2018, 1, 1);
+		
+		/*
+		function getData(start, end){
+			var postData = '';
+			postData = $.ajax({
+				url: 'getStateDataByYear',
+				type: 'POST',
+				data: JSON.stringify({'s':start, 'e':end}),
+				contentType: 'application/json;charset=UTF-8',
+				async: false
+			}).responseText;
+			return postData
+		}
+		*/
+		
         const drawTimeline = function() {
-            let margin = {top: 10, right: 12, bottom: 10, left: 10},
-                width = 1200,
-                height = 100;
+            let margin = {top: 10, right: 40, bottom: 10, left: 10},
+                width = 1000,
+                height = 50;
 
             let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
 
             let x = d3.scaleTime()
-                        .domain([new Date(1966, 1, 1), new Date(2018, 12, 30) - 1])
+                        .domain(range)
                         .rangeRound([0, width]);
 
-            let svg = d3.select(".timeline-filter").append("svg")
+            let svg = d3.select("div.timeline-filter").append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom)
+						.attr('class', 'timeline-svg')
                         .append("g")
-                        .attr("transform", "translate(" + 10 + "," + 10 + ")");
+                        .attr("transform", "translate(" + 30 + "," + 10 + ")");
 
             svg.append("g")
                 .attr("class", "axis axis--grid")
@@ -271,7 +290,8 @@
                 .attr("text-anchor", null)
                 .selectAll("text")
                 .attr("transform", "rotate(-90)" )
-                .attr("x", 6);
+                .attr("x", 6)
+				.attr("y", -12);
 
             let brush = d3.brushX()
                             .extent([[0, 0], [width, height]])
@@ -313,9 +333,11 @@
                     d1[1] = d3.timeYear.offset(d1[0]);
                 }
 
-                console.log(d1);
+                //console.log(d1);
+				yearStart = d1[0]
+				yearEnd = d1[1]
                 d3.select(this).transition().call(d3.event.target.move, d1.map(x));
-
+				drawVis(toggleVar, yearStart, yearEnd);
             }
 
             function brushmoved() {
@@ -323,18 +345,14 @@
                 handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
 
             }
-
-
         };
-
-        drawTimeline();
 
 		const tooltipHtml = function (n, cases){	/* function to create html content string in tooltip div. */
 			return "<h4>"+n+"</h4><table>"+
 				"<tr><td>Incidents:&nbsp;</td><td>"+(cases)+"</td></tr></table>";
 		};
 		
-		const drawBarUSChart = function () {
+		const drawBarUSChart = function (yearStart, yearEnd) {
             //Append SVG to the plotchart div
             const svg = d3.select(".year-chart")
                         .append('svg')
@@ -484,9 +502,13 @@
             });
         };
 
-
-		drawBarUSChart();
-		drawRadialBar();
+		const drawVis = function(toggleIndex, s, e) {
+			drawBarUSChart(s, e);
+			drawRadialBar();
+        };
+		
+		drawTimeline();
+		drawVis(toggleVar, yearStart, yearEnd)
         
     </script>
 </body>

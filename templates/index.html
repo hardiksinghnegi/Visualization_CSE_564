@@ -306,7 +306,7 @@
         let data;
         let toggleVar = 1;
 		let start = new Date(1967, 1, 1);
-		let end = new Date(2019, 1, 1);
+		let end = new Date(2018, 1, 1);
         data = {{ data.incident_data | safe }};
 
         const drawTimeline = function() {
@@ -314,7 +314,7 @@
                 width = 1000,
                 height = 50;
 
-            let range = [new Date(1966, 1, 1), new Date(2019, 12, 30) - 1];
+            let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
 
             let x = d3.scaleTime()
                         .domain(range)
