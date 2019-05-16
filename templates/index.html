@@ -92,6 +92,11 @@
 		justify-content: center;
 	}
 	
+	.tile-header-left {
+		align-items: left;
+		justify-content: left;
+	}
+	
 	.tile-content {
 		height:60%;
 		color:gray;
@@ -237,7 +242,7 @@
 				<h4 style="margin: 0 auto;text-align:center;color:gray;margin-top:10px">DISTRIBUTION OF INCIDENTS OVER THE YEARS</h4>
 				<br>
 				<div>
-					<div class="border" style="float:left;width:20%;margin-left:3%">
+					<div class="border" style="float:left;width:15%;margin-left:12%">
 						<div class="tile-header border">
 							<center><h6>Incidents</h6></center>
 						</div>
@@ -245,7 +250,7 @@
 							<h6 id="incidents">428</h6>
 						</div>
 					</div>
-					<div class="border" style="float:left;width:20%;margin-left:5%">
+					<div class="border" style="float:left;width:15%;margin-left:5%">
 						<div class="tile-header border">
 							<center><h6>Fatalities</h6></center>
 						</div>
@@ -253,7 +258,7 @@
 							<h6 id="fatalities">2165</h6>
 						</div>
 					</div>
-					<div class="border" style="float:left;width:20%;margin-left:5%">
+					<div class="border" style="float:left;width:15%;margin-left:5%">
 						<div class="tile-header border">
 							<h6>Injuries</h6>
 						</div>
@@ -262,8 +267,11 @@
 						</div>
 					</div>
 					<!-- Basic dropdown -->
-					<div style="float:left;width:20%;margin-left:5%">
-						<select id="state-filter">
+					<div class="border" style="float:left;width:15%;margin-left:5%">
+						<div class="tile-header tile-header-left border">
+							<h6 style="padding-left:5px">Select state:</h6>
+						</div>
+						<select id="state-filter" style="width:100%">
 							<option value="All">All</option>
 							<option value="Alabama">Alabama</option>
 							<option value="Alaska">Alaska</option>
