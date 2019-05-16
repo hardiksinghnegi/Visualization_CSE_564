@@ -117,7 +117,24 @@
     .axis--grid .tick--minor line {
         stroke-opacity: .5;
     }
-
+	
+	.tile-header {
+		height:40%;
+		background:steelblue;
+		color:#ecf0f1;
+		display:flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.tile-header-left {
+		align-items: left;
+		justify-content: left;
+	}
+	
+	.bar { 
+		fill: steelblue; 
+	}
 
 </style>
 
@@ -177,34 +194,38 @@
                         </div>
                     </div>
                     <!-- profile info & task notification -->
-					<h3 style="color:gray; padding:0 0 0 350px">ETHNIC TRENDS</h3>
+					<h3 class="center-align">ETHNIC TRENDS</h3>
                 </div>
             </div>
             <!-- header area end -->
             <!-- page title area start -->
             <div class="page-title-area">
             </div>
-            <div class="timeline-filter">
-
+            <div class="timeline-filter" align="center">
             </div>
             <!-- page title area end -->
-            <div class="year-chart border" align="center">
-				<br>
-				<h3 style="color:gray">Ethnic Distribution of Shooters</h3>
-				<br>
-                <div class="ethnic-mix">
-
-                </div>
+			<br>
+			<h4 class="center-align">ETHNIC DISTRIBUTION OF SHOOTERS</h4>
+			<br>
+			<div class="border" style="width:15%;margin-left:5%;margin-bottom:20px">
+				<div class="tile-header tile-header-left border">
+					<h6 style="padding-left:5px">Select Govt:</h6>
+				</div>
+				<select id="state-filter" style="width:100%">
+					<option value="All">All</option>
+					<option value="Republican">Republican</option>
+					<option value="Democratic">Democratic</option>
+					<option value="Independent">Independent</option>
+				</select>
+			</div>
+			<div class="horizontal-bar" style="float:left;width:20%">
+            </div>
+            <div class="year-chart" align="center" style="float:left;width:80%">
+            </div>
+			<div class="ethnic-mix">
             </div>
         </div>
         <!-- main content area end -->
-        <!-- footer area start-->
-        <footer>
-            <div class="footer-area">
-                <p>Dashboard developed by Hardik Singh Negi & Ayush Garg</p>
-            </div>
-        </footer>
-        <!-- footer area end-->
     </div>
     <!-- page container area end -->
     <!-- jquery latest version -->
@@ -234,22 +255,69 @@
     <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
 
     <script lang="babel" type='text/babel'>
+		const drawHorizontalBarChart = function() {
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 100},
+			width = 200 - margin.left - margin.right,
+			height = 500 - margin.top - margin.bottom;
+
+			// set the ranges
+			var y = d3.scaleBand()
+						.range([height, 0])
+						.padding(0.8);
+
+			var x = d3.scaleLinear()
+						.range([0, width]);
+
+			// append the svg object to the body of the page
+			// append a 'group' element to 'svg'
+			// moves the 'group' element to the top left margin
+			var svg = d3.select("div.horizontal-bar").append("svg")
+						.attr("width", width + margin.left + margin.right)
+						.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+						.attr("transform", 
+						"translate(" + margin.left + "," + margin.top + ")");
+
+			d3.csv("{{ url_for('static',filename='data_files/csv/us_state_incidents.csv') }}", function(error, data) {
+				// Scale the range of the data in the domains
+				x.domain([0, d3.max(data, function(d){ return d.cases; })])
+				y.domain(data.map(function(d) { return d.state; }));
+				//y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+				// append the rectangles for the bar chart
+				svg.selectAll(".bar")
+					.data(data)
+					.enter().append("rect")
+					.attr("class", "bar")
+					//.attr("x", function(d) { return x(d.sales); })
+					.attr("width", function(d) {return x(d.cases); } )
+					.attr("y", function(d) { return y(d.state); })
+					.attr("height", y.bandwidth());
+
+				// add the y Axis
+				svg.append("g")
+					.call(d3.axisLeft(y));
+			});
+		}
+		
         const drawTimeline = function() {
-            let margin = {top: 10, right: 12, bottom: 10, left: 10},
-                width = 1200,
-                height = 50;
+            let margin = {top: 10, right: 40, bottom: 10, left: 10},
+                width = 1000,
+                height = 37;
 
             let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
 
             let x = d3.scaleTime()
-                        .domain([new Date(1966, 1, 1), new Date(2018, 12, 30) - 1])
+                        .domain(range)
                         .rangeRound([0, width]);
 
-            let svg = d3.select(".timeline-filter").append("svg")
+            let svg = d3.select("div.timeline-filter").append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom)
+						.attr('class', 'timeline-svg')
                         .append("g")
-                        .attr("transform", "translate(" + 10 + "," + 10 + ")");
+                        .attr("transform", "translate(" + 30 + "," + 10 + ")");
 
             svg.append("g")
                 .attr("class", "axis axis--grid")
@@ -270,7 +338,8 @@
                 .attr("text-anchor", null)
                 .selectAll("text")
                 .attr("transform", "rotate(-90)" )
-                .attr("x", 6);
+                .attr("x", 6)
+				.attr("y", -12);
 
             let brush = d3.brushX()
                             .extent([[0, 0], [width, height]])
@@ -346,6 +415,7 @@
             };
 
          drawEthincMix();
+		 drawHorizontalBarChart();
     </script>
 </body>
 

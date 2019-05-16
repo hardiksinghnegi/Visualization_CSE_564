@@ -54,6 +54,19 @@
 
 /*------------------------- 1. Core Css -------------------*/
 
+.center-align {
+	margin: 0 auto;
+	text-align:center;
+	color:gray;
+}
+
+/*
+.timeline-filter {
+	position:fixed;
+	background:white;
+}
+*/
+
 .page-container {
     width: 100%;
     height: 100%;
