@@ -1,6 +1,6 @@
 import configparser
 import json
-from data_utils import prepare_data, get_incidents_per_year, render_state_csv_by_year, get_incidents_per_state, get_index_stats, get_scree_incidents
+from data_utils import *
 from flask import Flask, render_template, request, redirect, Response, jsonify
 
 
@@ -59,7 +59,13 @@ def data_maps_by_year():
 
 @app.route("/rmix", methods=['POST', 'GET'])
 def racial_mix():
-    return render_template('racial_mix.html')
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    shooting_dataset = config['DATA']['INPUT_CSV_1']
+    df = prepare_data(shooting_dataset)
+    data = get_incident_race_distribution(df)
+    data = {'distribution_data': data}
+    return render_template('racial_mix.html', data=data)
 
 
 @app.route("/indexStat", methods=['POST', 'GET'])

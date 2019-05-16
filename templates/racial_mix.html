@@ -255,6 +255,10 @@
     <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
 
     <script lang="babel" type='text/babel'>
+
+        let data;
+		data = {{ data.distribution_data | safe }};
+
 		const drawHorizontalBarChart = function() {
 			// set the dimensions and margins of the graph
 			var margin = {top: 20, right: 20, bottom: 30, left: 100},
@@ -299,7 +303,7 @@
 				svg.append("g")
 					.call(d3.axisLeft(y));
 			});
-		}
+		};
 		
         const drawTimeline = function() {
             let margin = {top: 10, right: 40, bottom: 10, left: 10},
@@ -397,7 +401,7 @@
 
          drawTimeline();
 
-         const drawEthincMix = function() {
+         const drawEthincMix = function(data) {
                 var donut = donutChart()
                             .width(800)
                             .height(450)
@@ -406,15 +410,15 @@
                             .variable('Distribution')
                             .category('Race');
 
-                d3.csv("{{ url_for('static',filename='data_files/csv/shooting_racial_distribution.csv') }}", function(error, data) {
-                    if (error) throw error;
+
+                    console.log(data);
                     d3.select('.year-chart')
                     .datum(data) // bind data to the div
                     .call(donut); // draw chart in div
-                });
+
             };
 
-         drawEthincMix();
+         drawEthincMix(data);
 		 drawHorizontalBarChart();
     </script>
 </body>

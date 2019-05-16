@@ -90,8 +90,17 @@ def get_incident_race_distribution(data):
     df = tmp.to_frame()
     df = tmp.reset_index(name='Incidents')
     df['Distribution'] = (df['Incidents'] / df['Incidents'].sum())
-    df.to_csv('static/data_files/csv/shooting_racial_distribution.csv', index=False)
-    print(df)
+    result = []
+    for index, row in df.iterrows():
+        race_obj = {
+                        'Race' : row['Race'],
+                        'Incidents'  : row['Incidents'],
+                        'Distribution' : row['Distribution']
+                    }
+
+        result.append(race_obj)
+
+    return result;
 
 
 def render_state_csv_by_year(data, start, end):
@@ -119,8 +128,8 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
 df = prepare_data(shooting_dataset)
-get_scree_incidents(df)
+# get_scree_incidents(df)
 # # # get_year_bar_data(df)
 # get_index_stats(df, 1966, 2018, "Alaska")
-# get_incident_race_distribution(df)
+get_incident_race_distribution(df)
 # render_state_csv_by_year(df, 1966, 2019)
