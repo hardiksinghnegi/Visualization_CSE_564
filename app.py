@@ -1,6 +1,6 @@
 import configparser
 import json
-from data_utils import prepare_data, get_incidents_per_year, render_state_csv_by_year, get_incidents_per_state, get_index_stats
+from data_utils import prepare_data, get_incidents_per_year, render_state_csv_by_year, get_incidents_per_state, get_index_stats, get_scree_incidents
 from flask import Flask, render_template, request, redirect, Response, jsonify
 
 
@@ -69,12 +69,33 @@ def index_statistics():
         data = request.get_json()
         start = int(data['s'])
         end = int(data['e'])
+        state = str(data['state'])
         config = configparser.ConfigParser()
         config.read('config.ini')
         shooting_dataset = config['DATA']['INPUT_CSV_1']
         df = prepare_data(shooting_dataset)
-        result = get_index_stats(df, start, end)
+        result = get_index_stats(df, start, end, state)
         return json.dumps(result)
+
+
+@app.route("/yearData", methods=['POST', 'GET'])
+def index_year_data():
+
+    if request.method == 'POST':
+        data = request.get_json()
+        state = str(data['state'])
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        shooting_dataset = config['DATA']['INPUT_CSV_1']
+        df = prepare_data(shooting_dataset)
+        result_bar = get_incidents_per_year(df, state)
+        result_scree = get_scree_incidents(df, state)
+        result_dict = {
+                            'scree' : result_scree,
+                            'bar'   : result_bar
+                      }
+
+        return json.dumps(result_dict)
 
 
 if __name__ == "__main__":

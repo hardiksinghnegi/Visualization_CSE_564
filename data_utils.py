@@ -17,7 +17,9 @@ def get_year_bar_data(data):
     return data.Year.unique().tolist()
 
 
-def get_incidents_per_year(data):
+def get_incidents_per_year(data, state="All"):
+    if state != "All":
+        data = data.loc[data['State'] == state]
     csv_df = data[['Year']]
     csv_df['Year'] = pd.to_datetime(csv_df['Year'], format="%Y")
     tmp = csv_df.groupby('Year').size()
@@ -27,6 +29,28 @@ def get_incidents_per_year(data):
     df.rename(columns={'Year': 'date'}, inplace=True)
     df.to_csv('static/data_files/csv/scree_index.csv', index=False)
     return data['Year'].value_counts().to_dict()
+
+
+def get_scree_incidents(data, state="All"):
+    if state != "All":
+        data = data.loc[data['State'] == state]
+    csv_df = data[['Year']]
+    csv_df['Year'] = pd.to_datetime(csv_df['Year'], format="%Y")
+    tmp = csv_df.groupby('Year').size()
+    df = tmp.to_frame()
+    df = tmp.reset_index(name = 'count')
+    df['Year'] = pd.to_datetime(df["Year"]).dt.strftime('%-d-%b-%Y')
+    df.rename(columns={'Year': 'date'}, inplace=True)
+
+    result = []
+    for index, row in df.iterrows():
+        year_obj = {
+            'date': row['date'],
+            'count': int(row['count'])
+        }
+        result.append(year_obj)
+
+    return result
 
 
 def get_incidents_per_state(data):
@@ -75,16 +99,18 @@ def render_state_csv_by_year(data, start, end):
     return get_incidents_per_state(csv_df)
 
 
-def get_index_stats(data, start, end):
+def get_index_stats(data, start, end, state):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
+    if state != "All":
+        csv_df = csv_df.loc[csv_df['State'] == state]
     csv_df = csv_df[['Dead','Injured']]
     incidents = csv_df.shape[0]
     dead =  csv_df['Dead'].sum()
     injured = csv_df['Injured'].sum()
     stat_dict = {
-                    'fatalities' : incidents,
-                    'injuries'   : dead,
-                    'incidents'  : injured
+                    'fatalities' : str(dead),
+                    'injuries'   : str(injured),
+                    'incidents'  : str(incidents)
                 }
 
     return stat_dict
@@ -93,7 +119,8 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
 df = prepare_data(shooting_dataset)
-# # get_year_bar_data(df)
-get_index_stats(df, 2000, 2020)
+get_scree_incidents(df)
+# # # get_year_bar_data(df)
+# get_index_stats(df, 1966, 2018, "Alaska")
 # get_incident_race_distribution(df)
 # render_state_csv_by_year(df, 1966, 2019)

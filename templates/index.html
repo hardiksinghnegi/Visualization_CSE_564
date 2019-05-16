@@ -379,7 +379,7 @@
         data = {{ data.incident_data | safe }};
 		
 		const getData = function(s, e){
-			var postData = $.ajax({
+			let postData = $.ajax({
 				url: 'indexStat',
 				type: 'POST',
 				data: JSON.stringify({'s':s.getFullYear(), 'e':e.getFullYear(), 'state':document.getElementById("state-filter").value}),
@@ -387,6 +387,17 @@
 				async: false
 			}).responseText;
 			return postData;
+		};
+
+		const getYearData = function(){
+			let postYearData = $.ajax({
+				url: 'yearData',
+				type: 'POST',
+				data: JSON.stringify({'state':document.getElementById("state-filter").value}),
+				contentType: 'application/json;charset=UTF-8',
+				async: false
+			}).responseText;
+			return postYearData;
 		};
 
         const drawTimeline = function() {
@@ -470,8 +481,8 @@
                 }
 
                 console.log(d1);
-				start = d1[0]
-				end = d1[1]
+				start = d1[0];
+				end = d1[1];
                 d3.select(this).transition().call(d3.event.target.move, d1.map(x));
 				drawVis(toggleVar, start, end);
             }
@@ -592,9 +603,8 @@
 				})
         };
 
-        const drawScree  = function(startYear, endYear) {
-			console.log(startYear.getFullYear())
-			console.log(endYear.getFullYear())
+        const drawScree  = function(data, startYear, endYear) {
+
             const margin = { top: 20, right: 50, bottom: 30, left: 50 },
             width = 800,
             height = 250;
@@ -621,17 +631,18 @@
             .append('g')
             .attr("transform", "translate(" + 50 + "," + 40 + ")");
 
-            d3.csv("{{ url_for('static',filename='data_files/csv/scree_index.csv') }}", type, (error, data) => {
-				if (error) throw error;
+                for (var i=0; i<data.length; i++){
+                    data[i]['date'] = new Date(data[i]['date']);
+                }
 				console.log(data);
 				data.sort((a, b) => a.date - b.date);
 				
-				let filteredData = []
+				let filteredData = [];
 				for(var i = 0; i < data.length; i++) {
 					if(data[i]['date'].getFullYear() >= startYear.getFullYear() && data[i]['date'].getFullYear() <= endYear.getFullYear())
 						filteredData.push(data[i])
 				}
-				console.log(filteredData)
+				console.log(filteredData);
 				
 				x.domain([filteredData[0].date, filteredData[filteredData.length - 1].date]);
 				y.domain(d3.extent(filteredData, d => d.count));
@@ -755,27 +766,28 @@
 
 					focus.select('text').text(d.count);
 				}
-            });
-
-            function type(d) {
-                d.date = parseTime(d.date);
-                d.count = +d.count;
-                return d;
-            }
+            
         };
 
         const drawVis = function(toggleIndex, yearStart, yearEnd) {
+
+            let statData = JSON.parse(getData(yearStart, yearEnd));
+			document.getElementById('incidents').innerHTML = statData['incidents'];
+			document.getElementById('injuries').innerHTML = statData['injuries'];
+			document.getElementById('fatalities').innerHTML = statData['fatalities'];
 			document.querySelector(".year-chart").innerHTML = '';
+
+            let yearData = JSON.parse(getYearData());
+            console.log("test_beg");
+			console.log(yearData);
+			console.log("test_end");
+
             if (toggleIndex == 1) {
-                drawBarChart(data, yearStart, yearEnd);
+                drawBarChart(yearData['bar'], yearStart, yearEnd);
             }
             else {
-                drawScree(yearStart, yearEnd);
+                drawScree(yearData['scree'], yearStart, yearEnd);
             }
-			let statData = JSON.parse(getData(yearStart, yearEnd));
-			document.getElementById('incidents').innerHTML = statData['incidents']
-			document.getElementById('injuries').innerHTML = statData['injuries']
-			document.getElementById('fatalities').innerHTML = statData['fatalities']
         };
 
         $(function() {
@@ -786,7 +798,14 @@
                drawVis(toggleVar, start, end);
             })
         });
-		
+
+        $(function() {
+            $( "#state-filter" ).change(function() {
+                drawVis(toggleVar, start, end);
+            });
+        });
+
+
         drawVis(toggleVar, start, end);
 		drawTimeline()
 
