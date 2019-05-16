@@ -72,8 +72,13 @@
 	}
 
 	.tile {
-		width:33.3%;
-		height:100px;
+		width:70%;
+		float:left;
+		overflow:hidden
+	}
+	
+	.tile-comp {
+		width:15%;
 		float:left;
 		overflow:hidden
 	}
@@ -154,6 +159,12 @@
 	#tooltip tr td:nth-child(2){
 		text-align:center;
 	}
+	
+	.scrollable-menu {
+		height: auto;
+		max-height: 200px;
+		overflow-x: hidden;
+	}
 
 </style>
 
@@ -213,64 +224,111 @@
                         </div>
                     </div>
                     <!-- profile info & task notification -->
-					<h3 style="color:gray; padding:0 0 0 350px">TRENDS AT A GLANCE</h3>
+					<h3 style="margin: 0 auto;text-align:center;color:gray;">TRENDS AT A GLANCE</h3>
                 </div>
             </div>
             <!-- header area end -->
             <!-- page title area start -->
             <div class="page-title-area" >
             </div>
-            <div class="timeline-filter">
-
+			<div class="timeline-filter">
             </div>
             <div class="bar-scree">
+				<h4 style="margin: 0 auto;text-align:center;color:gray;margin-top:10px">DISTRIBUTION OF INCIDENTS OVER THE YEARS</h4>
 				<br>
-				<center><h3 style="color:gray">Distribution of the incidents over the years</h3></center>
-				<br>
+				<div>
+					<div class="border" style="float:left;width:20%;margin-left:3%">
+						<div class="tile-header border">
+							<center><h6>Incidents</h6></center>
+						</div>
+						<div class="tile-content">
+							<h6 id="incidents">428</h6>
+						</div>
+					</div>
+					<div class="border" style="float:left;width:20%;margin-left:5%">
+						<div class="tile-header border">
+							<center><h6>Fatalities</h6></center>
+						</div>
+						<div class="tile-content">
+							<h6 id="fatalities">2165</h6>
+						</div>
+					</div>
+					<div class="border" style="float:left;width:20%;margin-left:5%">
+						<div class="tile-header border">
+							<h6>Injuries</h6>
+						</div>
+						<div class="tile-content">
+							<h6 id="injuries">2624</h6>
+						</div>
+					</div>
+					<!-- Basic dropdown -->
+					<div style="float:left;width:20%;margin-left:5%">
+						<select id="state-filter">
+							<option value="All">All</option>
+							<option value="Alabama">Alabama</option>
+							<option value="Alaska">Alaska</option>
+							<option value="Arizona">Arizona</option>
+							<option value="Arkansas">Arkansas</option>
+							<option value="California">California</option>
+							<option value="Colorado">Colorado</option>
+							<option value="Connecticut">Connecticut</option>
+							<option value="D.C.">D.C.</option>
+							<option value="Delaware">Delaware</option>
+							<option value="Florida">Florida</option>
+							<option value="Georgia">Georgia</option>
+							<option value="Hawaii">Hawaii</option>
+							<option value="Idaho">Idaho</option>
+							<option value="Illinois">Illinois</option>
+							<option value="Indiana">Indiana</option>
+							<option value="Iowa">Iowa</option>
+							<option value="Kansas">Kansas</option>
+							<option value="Kentucky">Kentucky</option>
+							<option value="Louisiana">Louisiana</option>
+							<option value="Maine">Maine</option>
+							<option value="Maryland">Maryland</option>
+							<option value="Massachusetts">Massachusetts</option>
+							<option value="Michigan">Michigan</option>
+							<option value="Minnesota">Minnesota</option>
+							<option value="Mississippi">Mississippi</option>
+							<option value="Missouri">Missouri</option>
+							<option value="Montana">Montana</option>
+							<option value="Nebraska">Nebraska</option>
+							<option value="Nevada">Nevada</option>
+							<option value="New Hampshire">New Hampshire</option>
+							<option value="New Jersey">New Jersey</option>
+							<option value="New Mexico">New Mexico</option>
+							<option value="New York">New York</option>
+							<option value="North Carolina">North Carolina</option>
+							<option value="North Dakota">North Dakota</option>
+							<option value="Ohio">Ohio</option>
+							<option value="Oklahoma">Oklahoma</option>
+							<option value="Oregon">Oregon</option>
+							<option value="Pennsylvania">Pennsylvania</option>
+							<option value="South Carolina">South Carolina</option>
+							<option value="South Dakota">South Dakota</option>
+							<option value="Tennessee">Tennessee</option>
+							<option value="Texas">Texas</option>
+							<option value="Utah">Utah</option>
+							<option value="Vermont">Vermont</option>
+							<option value="Virginia">Virginia</option>
+							<option value="Washington">Washington</option>
+							<option value="West Virginia">West Virginia</option>
+							<option value="Wisconsin">Wisconsin</option>
+							<option value="Wyoming">Wyoming</option>
+						</select>
+					</div>
+<!-- Basic dropdown -->
+                </div>
                 <div class="year-chart" align="center">
                 </div>
-				<div class="custom-control custom-switch border-bottom" align="center" style="padding-bottom:20px">
+				<div class="custom-control custom-switch" align="center">
 					<input type="checkbox" class="custom-control-input" onchange="on_change()" id="toggleVis" checked>
 					<label class="custom-control-label label-text" for="toggleVis">Switch to Time Series Chart</label>
 				</div>
             </div>
-			<div style="overflow:hidden">
-				<br>
-				<center><h3 style="color:gray">Key Figures (1966 - 2018)</h3></center>
-				<br>
-                <div class="tile border">
-					<div class="tile-header border">
-						<center><h5>Total Incidents</h5></center>
-					</div>
-					<div class="tile-content border">
-						<h5>428</h5>
-					</div>
-				</div>
-				<div class="tile border">
-					<div class="tile-header border">
-						<center><h5>Fatalities</h5></center>
-					</div>
-					<div class="tile-content border">
-						<h5>2165</h5>
-					</div>
-				</div>
-				<div class="tile border">
-					<div class="tile-header border">
-						<h5>Injuries</h5>
-					</div>
-					<div class="tile-content border">
-						<h5>2624</h5>
-					</div>
-				</div>
-            </div>
-			<div class="pie-chart border-bottom" align="center">
-				<br>
-				<h3 style="color:gray;">Distribution of the shooters race over the years</h3>
-				<br>
-            </div>
         </div>
         <!-- main content area end -->
-        <!-- footer area start-->
+		<!-- 
         <footer>
             <div class="footer-area">
                 <p>Dashboard developed by Hardik Singh Negi & Ayush Garg</p>
@@ -280,8 +338,11 @@
     </div>
     <!-- page container area end -->
     <!-- bootstrap 4 js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <!-- jquery latest version -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
+    <!-- bootstrap 4 js -->
+    <script src="{{ url_for('static',filename='styles/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/metisMenu.min.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/jquery.slicknav.min.js') }}"></script>
@@ -299,20 +360,31 @@
     <script src='https://npmcdn.com/babel-core@5.8.34/browser.min.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
 
     <script lang="babel" type='text/babel'>
         let data;
         let toggleVar = 1;
-		let start = new Date(1967, 1, 1);
-		let end = new Date(2018, 1, 1);
+		let start = new Date(1966, 1, 1);
+		let end = new Date(2018, 12, 30);
         data = {{ data.incident_data | safe }};
+		
+		const getData = function(s, e){
+			var postData = $.ajax({
+				url: 'indexStat',
+				type: 'POST',
+				data: JSON.stringify({'s':s.getFullYear(), 'e':e.getFullYear(), 'state':document.getElementById("state-filter").value}),
+				contentType: 'application/json;charset=UTF-8',
+				async: false
+			}).responseText;
+			return postData;
+		};
 
         const drawTimeline = function() {
             let margin = {top: 10, right: 40, bottom: 10, left: 10},
                 width = 1000,
-                height = 50;
+                height = 37;
 
             let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
 
@@ -401,8 +473,6 @@
                 handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
 
             }
-
-
         };
 
         const drawBarChart = function (data, b, e) {
@@ -418,15 +488,15 @@
 			console.log(filteredData);
             //set the dimensions
             const margin = 200,
-            width = 900 - 100,
-            height = 500 - margin;
+            width = 800,
+            height = 250
 
             //Append SVG to the plotchart div
             const svg = d3.select(".year-chart")
                         .append('svg')
                         .attr("class", "barchart")
                         .attr('width', 900)
-                        .attr('height', 400);
+                        .attr('height', 340);
 			
             //Scale the axis
             const xScale = d3.scaleBand().range([0, width]).padding(0.4);
@@ -519,7 +589,7 @@
 			console.log(endYear.getFullYear())
             const margin = { top: 20, right: 50, bottom: 30, left: 50 },
             width = 800,
-            height = 300;
+            height = 250;
 
             const parseTime = d3.timeParse('%d-%b-%Y');
             const bisectDate = d3.bisector(d => d.date).left;
@@ -539,7 +609,7 @@
 
             const svg = d3.select('.year-chart').append('svg')
             .attr('width', 900)
-            .attr('height', 400)
+            .attr('height', 340)
             .append('g')
             .attr("transform", "translate(" + 50 + "," + 40 + ")");
 
@@ -694,6 +764,10 @@
             else {
                 drawScree(yearStart, yearEnd);
             }
+			let statData = JSON.parse(getData(yearStart, yearEnd));
+			document.getElementById('incidents').innerHTML = statData['incidents']
+			document.getElementById('injuries').innerHTML = statData['injuries']
+			document.getElementById('fatalities').innerHTML = statData['fatalities']
         };
 
         $(function() {
@@ -705,9 +779,7 @@
             })
         });
 		
-		let yearStart = new Date(1967, 1, 1)
-		let yearEnd = new Date(2019, 1, 1)
-        drawVis(toggleVar, yearStart, yearEnd);
+        drawVis(toggleVar, start, end);
 		drawTimeline()
 
     </script>

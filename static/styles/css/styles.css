@@ -90,7 +90,7 @@
 
 .main-content {
     width: 100%;
-    background: #F3F8FB;
+    /*background: #F3F8FB;*/
 	overflow:hidden;
 }
 
@@ -397,7 +397,7 @@
 /*-------------------- 2.2 Header Area -------------------*/
 
 .header-area {
-    padding: 15px 30px;
+    padding: 3px 30px;
     background: #fff;
     border-bottom: 1px solid #d8e3e7;
 }
@@ -1207,7 +1207,7 @@ table.dbkit-table tr td {
 
 .footer-area {
     text-align: center;
-    padding: 23px 0 19px;
+    padding: 5px 0 5px;
     background: #fff;
 }
 
