@@ -75,11 +75,25 @@ def render_state_csv_by_year(data, start, end):
     return get_incidents_per_state(csv_df)
 
 
+def get_index_stats(data, start, end):
+    csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
+    csv_df = csv_df[['Dead','Injured']]
+    incidents = csv_df.shape[0]
+    dead =  csv_df['Dead'].sum()
+    injured = csv_df['Injured'].sum()
+    stat_dict = {
+                    'fatalities' : incidents,
+                    'injuries'   : dead,
+                    'incidents'  : injured
+                }
+
+    return stat_dict
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
 df = prepare_data(shooting_dataset)
 # # get_year_bar_data(df)
-get_incidents_per_state(df)
+get_index_stats(df, 2000, 2020)
 # get_incident_race_distribution(df)
 # render_state_csv_by_year(df, 1966, 2019)
