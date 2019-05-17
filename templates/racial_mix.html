@@ -211,11 +211,10 @@
 				<div class="tile-header tile-header-left border">
 					<h6 style="padding-left:5px">Select Govt:</h6>
 				</div>
-				<select id="state-filter" style="width:100%">
-					<option value="All">All</option>
+				<select id="govt-filter" style="width:100%">
+					<option value="Both">Both</option>
 					<option value="Republican">Republican</option>
 					<option value="Democratic">Democratic</option>
-					<option value="Independent">Independent</option>
 				</select>
 			</div>
 			<div class="horizontal-bar" style="float:left;width:20%">
@@ -255,9 +254,26 @@
     <script src="{{ url_for('static',filename='styles/js/ethnicmix.js') }}"></script>
 
     <script lang="babel" type='text/babel'>
-
+		let toggleVar = 1;
+		let yearStart = new Date(1966, 1, 1);
+		let yearEnd = new Date(2018, 1, 1);
+		
         let data;
 		data = {{ data.distribution_data | safe }};
+		
+		console.log(data);
+		
+		const getData = function(start, end, govt){
+			var postData = $.ajax({
+				url: 'getRaceDataByYear',
+				type: 'POST',
+				data: JSON.stringify({'s':start.getFullYear(), 'e':end.getFullYear(), 'govt':govt}),
+				contentType: 'application/json;charset=UTF-8',
+				async: false
+			}).responseText;
+
+			return postData;
+		};
 
 		const drawHorizontalBarChart = function() {
 			// set the dimensions and margins of the graph
@@ -386,22 +402,22 @@
                 }
 
                 console.log(d1);
+				yearStart = d1[0];
+				yearEnd = d1[1];
                 d3.select(this).transition().call(d3.event.target.move, d1.map(x));
-
+				let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value));
+				console.log(status)
+				data = status['data']['distribution_data']
+				drawVis(toggleVar, yearStart, yearEnd);
             }
 
             function brushmoved() {
                 let s = d3.event.selection;
                 handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
-
             }
-
-
         };
 
-         drawTimeline();
-
-         const drawEthincMix = function(data) {
+        const drawEthincMix = function(data) {
                 var donut = donutChart()
                             .width(800)
                             .height(450)
@@ -416,10 +432,27 @@
                     .datum(data) // bind data to the div
                     .call(donut); // draw chart in div
 
-            };
+        };
 
-         drawEthincMix(data);
-		 drawHorizontalBarChart();
+		const drawVis = function(toggleIndex, s, e) {
+		    document.querySelector(".horizontal-bar").innerHTML = '';
+		    document.querySelector(".year-chart").innerHTML = '';
+			drawEthincMix(data);
+			drawHorizontalBarChart();
+        };
+		
+		$(function() {
+            $( "#govt-filter" ).change(function() {
+				let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value));
+				console.log(status)
+				data = status['data']['distribution_data']
+                drawVis(toggleVar, yearStart, yearEnd);
+            });
+        });
+		
+		drawTimeline();
+		drawVis(toggleVar, yearStart, yearEnd)
+		 
     </script>
 </body>
 

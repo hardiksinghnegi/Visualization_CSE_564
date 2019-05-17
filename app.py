@@ -18,6 +18,8 @@ def index():
     shooting_dataset = config['DATA']['INPUT_CSV_1']
     df = prepare_data(shooting_dataset)
     year_dict = get_incidents_per_year(df)
+    #for key, value in year_dict.items():
+    #    year_dict[key] = value.item()
     year_json = json.dumps(year_dict)
     data = {'incident_data': year_json}
     return render_template('index.html', data=data)
@@ -52,6 +54,27 @@ def data_maps_by_year():
         shooting_dataset = config['DATA']['INPUT_CSV_1']
         df = prepare_data(shooting_dataset)
         result = render_state_csv_by_year(df, start, end)
+        status_dict = {'status' : '1',
+                       'data'   :  result}
+        return json.dumps(status_dict)
+
+
+@app.route("/getRaceDataByYear", methods=['POST', 'GET'])
+def data_race_by_year():
+    """
+        Race Content / Racial Mix page
+    """
+
+    if request.method == 'POST':
+        data = request.get_json()
+        start = int(data['s'])
+        end = int(data['e'])
+        govt = data['govt']
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        shooting_dataset = config['DATA']['INPUT_CSV_1']
+        df = prepare_data(shooting_dataset)
+        result = render_race_csv_by_year_govt(df, start, end, govt)
         status_dict = {'status' : '1',
                        'data'   :  result}
         return json.dumps(status_dict)
@@ -95,6 +118,8 @@ def index_year_data():
         shooting_dataset = config['DATA']['INPUT_CSV_1']
         df = prepare_data(shooting_dataset)
         result_bar = get_incidents_per_year(df, state)
+        #for key, value in result_bar.items():
+        #    result_bar[key] = value.item()
         result_scree = get_scree_incidents(df, state)
         result_dict = {
                             'scree' : result_scree,

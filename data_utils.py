@@ -8,7 +8,7 @@ def prepare_data(data_file):
     """
     df = pd.read_csv(data_file)
     sample_features = ["Year", "Location", "State", "Dead", "Injured", "Total", "Race", "Gender", "Mental Health",
-                       "Latitude", "Longitude"]
+                       "Latitude", "Longitude", "Party"]
 
     return df[sample_features]
 
@@ -27,7 +27,8 @@ def get_incidents_per_year(data, state="All"):
     df = tmp.reset_index(name = 'count')
     df['Year'] = pd.to_datetime(df["Year"]).dt.strftime('%-d-%b-%Y')
     df.rename(columns={'Year': 'date'}, inplace=True)
-    df.to_csv('static/data_files/csv/scree_index.csv', index=False)
+    #df.to_csv('static/data_files/csv/scree_index.csv', index=False)
+    #data['Year'] = data['Year'].astype(str)
     return data['Year'].value_counts().to_dict()
 
 
@@ -107,6 +108,13 @@ def render_state_csv_by_year(data, start, end):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
     return get_incidents_per_state(csv_df)
 
+def render_race_csv_by_year_govt(data, start, end, govt):
+    csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
+    if govt != 'Both':
+        csv_df = data.loc[data['Party'] == govt]
+    data = get_incident_race_distribution(csv_df)
+    data = {'distribution_data': data}
+    return data
 
 def get_index_stats(data, start, end, state):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
@@ -121,15 +129,14 @@ def get_index_stats(data, start, end, state):
                     'injuries'   : str(injured),
                     'incidents'  : str(incidents)
                 }
-
     return stat_dict
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
 df = prepare_data(shooting_dataset)
-# get_scree_incidents(df)
-# # # get_year_bar_data(df)
-# get_index_stats(df, 1966, 2018, "Alaska")
-get_incident_race_distribution(df)
+# get_year_bar_data(df)
+# get_index_stats(df, 2000, 2020)
+# get_incidents_per_state(df)
+# get_incident_race_distribution(df)
 # render_state_csv_by_year(df, 1966, 2019)
