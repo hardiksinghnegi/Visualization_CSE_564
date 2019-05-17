@@ -131,12 +131,22 @@ def get_index_stats(data, start, end, state):
                 }
     return stat_dict
 
+
+def get_year_stack(data):
+    csv_df = data[['Year', 'Dead', 'Injured']]
+    csv_df=csv_df.groupby('Year')['Dead', 'Injured'].sum()
+    csv_df.to_csv('static/data_files/csv/data.csv')
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
 df = prepare_data(shooting_dataset)
-# get_year_bar_data(df)
-# get_index_stats(df, 2000, 2020)
-# get_incidents_per_state(df)
+
+# get_scree_incidents(df)
+# # # get_year_bar_data(df)
+# get_index_stats(df, 1966, 2018, "Alaska")
 # get_incident_race_distribution(df)
 # render_state_csv_by_year(df, 1966, 2019)
+get_year_stack(df)
+
