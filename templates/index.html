@@ -331,9 +331,11 @@
                 </div>
 				<div class="custom-control custom-switch" align="center">
 					<input type="checkbox" class="custom-control-input" onchange="on_change()" id="toggleVis" checked>
-					<label class="custom-control-label label-text" for="toggleVis">Switch to Time Series Chart</label>
+					<label class="custom-control-label label-text" for="toggleVis">Switch to Bar Chart</label>
 				</div>
-                <div class="stack-chart" align="center" style="height:1000px">
+				<h4 class="center-align" style="margin-top:45px">STACKED BARCHART SHOWING TYPES OF VICTIMS</h4>
+				<br>
+                <div class="stack-chart" align="center">
                 </div>
             </div>
         </div>
@@ -775,11 +777,11 @@
             let svg = d3.select(".stack-chart")
 						.append('svg')
 						.attr('width', 900)
-						.attr('height', 500);
-            let margin = {top: 20, right: 20, bottom: 30, left: 40},
-                width = 960 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						.attr('height', 340);
+            
+            let width = 800,
+                height = 250,
+                g = svg.append("g").attr("transform", "translate(" + 50 + "," + 40 + ")");
 
             let x = d3.scaleBand()
                         .rangeRound([0, width])
@@ -840,12 +842,15 @@
                 .attr("class", "axis")
                 .call(d3.axisLeft(y).ticks(null, "s"))
                 .append("text")
-                .attr("x", 2)
                 .attr("y", y(y.ticks().pop()) + 0.5)
-                .attr("dy", "0.32em")
-                .attr("fill", "#000")
-                .attr("font-weight", "bold")
-                .attr("text-anchor", "start");
+                .attr("transform", "rotate(-90)")
+				.attr("x", -100)
+                .attr("y", -6)
+                .attr("dy", "-3.1em")
+                .attr("stroke", "black")
+                .style("fill", "black")
+                .style("font-size", "10px")
+                .text("VICTIMS");
 
             var legend = g.append("g")
                             .attr("font-family", "sans-serif")
@@ -857,13 +862,13 @@
                             .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
             legend.append("rect")
-                    .attr("x", width - 19)
+                    .attr("x", 49)
                     .attr("width", 19)
                     .attr("height", 19)
                     .attr("fill", z);
 
             legend.append("text")
-                    .attr("x", width - 24)
+                    .attr("x", 44)
                     .attr("y", 9.5)
                     .attr("dy", "0.32em")
                     .text(function(d) { return d; });
@@ -903,10 +908,10 @@
 			console.log("test_end");
 
             if (toggleIndex == 1) {
-                drawBarChart(yearData['bar'], yearStart, yearEnd);
+				drawScree(yearData['scree'], yearStart, yearEnd);
             }
             else {
-                drawScree(yearData['scree'], yearStart, yearEnd);
+				drawBarChart(yearData['bar'], yearStart, yearEnd);
             }
         };
 
