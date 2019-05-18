@@ -204,6 +204,13 @@ def render_laws_csv(data):
     print(csv_df)
 
 
+def scale_law(data):
+    print(data[['LawIndex','Incidents']].corr())
+    scaler = MinMaxScaler()
+    data[['LawIndex','Incidents']]  = scaler.fit_transform(data[['LawIndex','Incidents']])
+    data.to_csv('static/data_files/csv/law_year_norm.csv')
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
@@ -213,8 +220,8 @@ g_index_dataset = config['DATA']['INPUT_CSV_4']
 
 x = config['DATA']['INPUT_CSV_7']
 
-
-render_laws_csv(pd.read_csv(x))
+scale_law(pd.read_csv(x))
+# render_laws_csv(pd.read_csv(x))
 # df = prepare_data(shooting_dataset)
 # get_incidents_per_state_filter(df,1966,2000,"Both")
 

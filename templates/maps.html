@@ -196,6 +196,8 @@
 			<h4 class="center-align">STATEWIDE DISTRIBUTION OF MASS SHOOTING INCIDENTS</h4>
 			<div class="circular-chart" align="center">
             </div>
+            <div class="scatter-chart" align="center">
+            </div>
         </div>
         <!-- main content area end -->
     </div>
@@ -337,7 +339,7 @@
 
                 status = JSON.parse(status);
                 console.log(status['data']);
-				data = status['data']
+				data = status['data'];
 				drawVis(toggleVar, yearStart, yearEnd);
             }
 
@@ -504,6 +506,85 @@
 
         };
 
+        const  scatterChart = function(){
+            let margin = {
+					top: 20,
+					right: 20,
+					bottom: 30,
+					left: 50
+				},
+				width = 480 - margin.left - margin.right,
+				height = 250 - margin.top - margin.bottom;
+
+			let x = d3.scaleLinear()
+				.range([0, width]);
+
+			let y = d3.scaleLinear()
+				.range([height, 0]);
+
+			let xAxis = d3.axisBottom(x);
+
+			let yAxis = d3.axisLeft(y);
+
+			let svg = d3.select(".scatter-chart").append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			d3.csv("{{ url_for('static',filename='data_files/csv/law_year_norm.csv') }}", function(error, filteredData) {
+			    console.log(filteredData);
+			    console.log("yyyy");
+                filteredData.forEach(function (d) {
+                    d.LawIndex = +d.LawIndex;
+                    d.Incidents = +d.Incidents;
+                });
+
+                x.domain(d3.extent(filteredData, function (d) {
+                    return d.LawIndex;
+                })).nice();
+                y.domain(d3.extent(filteredData, function (d) {
+                    return d.Incidents;
+                })).nice();
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("x", width)
+                    .attr("y", -6)
+                    .style("text-anchor", "end")
+                    .text("Rate");
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Incidents");
+
+                svg.selectAll(".dot")
+                    .data(filteredData)
+                    .enter().append("circle")
+                    .attr("class", "dot")
+                    .attr("r", 3.5)
+                    .attr("cx", function (d) {
+                        return x(d.LawIndex);
+                    })
+                    .attr("cy", function (d) {
+                        return y(d.Incidents);
+                    })
+                    .style("fill", "steelblue");
+            });
+        };
+
+        scatterChart();
 		const drawVis = function(toggleIndex, s, e) {
 		    document.querySelector(".circular-chart").innerHTML = '';
 		    document.querySelector(".year-chart").innerHTML = '';
