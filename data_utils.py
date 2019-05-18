@@ -156,6 +156,7 @@ def process_google_index(data):
     data = data.groupby('Year')['Depression', 'Mental Health'].mean()
     data.to_csv('static/data_files/csv/google_index.csv')
 
+
 def get_mental_distribution(data,start,end):
     data = data[['Mental Health']]
     data = data.groupby('Mental Health').size().reset_index(name='counts')
