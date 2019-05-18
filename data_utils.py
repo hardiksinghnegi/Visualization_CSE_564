@@ -142,9 +142,10 @@ def get_year_stack(data):
 
 def process_unemployment_rate(data):
     scaler = StandardScaler()
-    data[['Rate', 'Incidents']] = scaler.fit_transform(data[['Rate','Incidents']])
-    print(data[['Rate', 'Incidents']].corr())
-    # data.to_csv('static/data_files/csv/unemp.csv', index=False)
+    data[['Rate', 'Incidents', 'Mental', 'Depression']] = scaler.fit_transform(data[['Rate', 'Incidents', 'Mental', 'Depression']])
+    print(data)
+    # print(data[['Rate', 'Incidents']].corr())
+    data.to_csv('static/data_files/csv/scatter_scale.csv', index=False)
 
 
 def process_national_unemployment_data(data):
@@ -164,6 +165,7 @@ def get_mental_distribution(data,start,end):
     print(data)
     return res_list
 
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
@@ -171,7 +173,7 @@ unemployment_dataset = config['DATA']['INPUT_CSV_2']
 n_unemployment_dataset = config['DATA']['INPUT_CSV_3']
 g_index_dataset = config['DATA']['INPUT_CSV_4']
 
-x = config['DATA']['INPUT_CSV_5']
+x = config['DATA']['INPUT_CSV_6']
 
 df = prepare_data(shooting_dataset)
 
@@ -180,8 +182,8 @@ g_df = pd.read_csv(g_index_dataset)
 
 h_df = pd.read_csv(x)
 
-get_mental_distribution(df,1960,2019)
-# process_unemployment_rate(h_df)
+
+process_unemployment_rate(h_df)
 #
 # # n_df = pd.read_csv(n_unemployment_dataset)
 # #
