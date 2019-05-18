@@ -138,8 +138,6 @@ def get_year_stack(data):
     csv_df = data[['Year', 'Dead', 'Injured']]
     csv_df = csv_df.groupby(['Year'])['Dead', 'Injured'].sum()
     csv_df.reset_index(level=0, inplace=True)
-    # print(csv_df)
-    # csv_df.to_csv('static/data_files/csv/data.csv')
     return csv_df
 
 
@@ -191,6 +189,14 @@ def get_stack_chart_data(data, start, end, state="All"):
     return result_list
 
 
+def get_incidents_per_state_filter(data, start, end, govt="Both"):
+    csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
+    if govt != 'Both':
+        csv_df = csv_df.loc[data['Party'] == govt]
+
+    result = get_incidents_per_state(csv_df)
+    return result
+
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -202,11 +208,12 @@ g_index_dataset = config['DATA']['INPUT_CSV_4']
 x = config['DATA']['INPUT_CSV_6']
 
 df = prepare_data(shooting_dataset)
+# get_incidents_per_state_filter(df,1966,2000,"Both")
 
-s_df = pd.read_csv(unemployment_dataset)
-g_df = pd.read_csv(g_index_dataset)
-
-h_df = pd.read_csv(x)
+# s_df = pd.read_csv(unemployment_dataset)
+# g_df = pd.read_csv(g_index_dataset)
+#
+# h_df = pd.read_csv(x)
 
 # get_stack_chart_data(df,1966,2018,"Alabama")
 

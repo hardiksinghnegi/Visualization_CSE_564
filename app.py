@@ -76,9 +76,11 @@ def data_race_by_year():
         shooting_dataset = config['DATA']['INPUT_CSV_1']
         df = prepare_data(shooting_dataset)
         result = render_race_csv_by_year_govt(df, start, end, govt)
+        state_result = get_incidents_per_state_filter(df, start, end, govt)
 
-        status_dict = {'status' : '1',
-                       'data'   :  result}
+        status_dict = {'status'    : '1',
+                       'data'      :  result,
+                       'state_stat': state_result}
         return json.dumps(status_dict)
 
 
@@ -145,6 +147,7 @@ def data_features():
     data = get_mental_distribution(df,1960,2020)
     data = {'ftr_data': data}
     return render_template('features.html', data=data)
+
 
 @app.route("/getFeatureStats", methods=['POST'])
 def feature_stats():

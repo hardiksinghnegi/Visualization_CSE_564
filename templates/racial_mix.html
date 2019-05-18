@@ -437,15 +437,15 @@
 
 		const drawVis = function(toggleIndex, s, e) {
 		    let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value));
-            console.log(status);
+		    console.log(status);
             data = status['data']['distribution_data'];
-		    {#document.querySelector(".horizontal-bar").innerHTML = '';#}
+            state_data = status['state_stat'];
 		    document.querySelector(".year-chart").innerHTML = '';
+		    document.querySelector(".horizontal-bar").innerHTML = '';
+		    drawHorizontalBarChart(state_data);
 			drawEthincMix(data);
 
         };
-
-		drawHorizontalBarChart(state_data);
 
 		$(function() {
             $( "#govt-filter" ).change(function() {
