@@ -101,7 +101,7 @@ def get_incident_race_distribution(data):
 
         result.append(race_obj)
 
-    return result;
+    return result
 
 
 def render_state_csv_by_year(data, start, end):
@@ -109,10 +109,14 @@ def render_state_csv_by_year(data, start, end):
     return get_incidents_per_state(csv_df)
 
 
-def render_race_csv_by_year_govt(data, start, end, govt):
+def render_race_csv_by_year_govt(data, start, end, govt, state="All"):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
     if govt != 'Both':
         csv_df = csv_df.loc[data['Party'] == govt]
+
+    if state != 'All':
+        csv_df = csv_df.loc[csv_df['State'] == state]
+
     data = get_incident_race_distribution(csv_df)
     data = {'distribution_data': data}
     return data
@@ -164,7 +168,6 @@ def get_mental_distribution(data,start,end):
     data = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
     data = data.groupby('Mental Health').size().reset_index(name='counts')
     res_list = data['counts'].tolist()
-    print(data)
     return res_list
 
 
@@ -220,9 +223,9 @@ g_index_dataset = config['DATA']['INPUT_CSV_4']
 
 x = config['DATA']['INPUT_CSV_7']
 
-scale_law(pd.read_csv(x))
+# scale_law(pd.read_csv(x))
 # render_laws_csv(pd.read_csv(x))
-# df = prepare_data(shooting_dataset)
+df = prepare_data(shooting_dataset)
 # get_incidents_per_state_filter(df,1966,2000,"Both")
 
 # s_df = pd.read_csv(unemployment_dataset)
@@ -241,7 +244,7 @@ scale_law(pd.read_csv(x))
 # process_google_index(g_df)
 
 # process_unemployment_rate(s_df)
-# render_race_csv_by_year_govt(df, 2000, 2020, "Republican")
+# render_race_csv_by_year_govt(df, 1966, 2020, "Both", "California")
 # # get_scree_incidents(df)
 # # # # get_year_bar_data(df)
 # # get_index_stats(df, 1966, 2018, "Alaska")

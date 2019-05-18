@@ -70,12 +70,12 @@ def data_race_by_year():
         start = int(data['s'])
         end = int(data['e'])
         govt = data['govt']
-
+        state = data['state']
         config = configparser.ConfigParser()
         config.read('config.ini')
         shooting_dataset = config['DATA']['INPUT_CSV_1']
         df = prepare_data(shooting_dataset)
-        result = render_race_csv_by_year_govt(df, start, end, govt)
+        result = render_race_csv_by_year_govt(df, start, end, govt,state)
         state_result = get_incidents_per_state_filter(df, start, end, govt)
 
         status_dict = {'status'    : '1',
