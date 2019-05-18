@@ -24,77 +24,103 @@
     <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 	<!-- jquery latest version -->
     <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
-
+	<script>
+		function change_button(){
+			$('.page-container').toggleClass('sbar_collapsed2');
+		}
+	</script>
+	
+	
 </head>
 
 <style> /* set the CSS */
 
-body {
-  font: 10px sans-serif;
-}
+	.scatter-matrix svg {
+		font: 10px sans-serif;
+	}
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+	.scatter-matrix .axis,
+	.scatter-matrix .frame {
+		shape-rendering: crispEdges;
+	}
 
-.dot {
-  stroke: #000;
-}
+	.scatter-matrix .axis line {
+		stroke: #ddd;
+	}
 
-.arc text {
-  font: 10px sans-serif;
-  text-anchor: middle;
-}
+	.scatter-matrix .axis path {
+		display: none;
+	}
 
-.arc path {
-  stroke: #fff;
-}
+	.scatter-matrix .cell text {
+		font-weight: bold;
+		text-transform: capitalize;
+		fill: black;
+	}
 
-    svg {
-  font: 10px sans-serif;
-  padding: 10px;
-}
+	.scatter-matrix .frame {
+		fill: none;
+		stroke: #aaa;
+	}
 
-.axis,
-.frame {
-  shape-rendering: crispEdges;
-}
+	.scatter-matrix circle {
+		fill-opacity: .7;
+	}
 
-.axis line {
-  stroke: #ddd;
-}
+	.scatter-matrix circle.hidden {
+		fill: #ccc !important;
+	}
 
-.axis path {
-  display: none;
-}
+	.scatter-matrix .extent {
+		fill: #000;
+		fill-opacity: .125;
+		stroke: #fff;
+	}
 
-.cell text {
-  font-weight: bold;
-  text-transform: capitalize;
-  fill: black;
-}
+	.line {
+		fill: none;
+		stroke: steelblue;
+		stroke-width: 2px;
+	}
+	
+	.axis--grid .domain {
+        fill: #ddd;
+        stroke: none;
+    }
 
-.frame {
-  fill: none;
-  stroke: #aaa;
-}
+	body {
+		font: 10px sans-serif;
+	}
 
-circle {
-  fill-opacity: .7;
-}
+	.axis path,
+	.axis line {
+		fill: none;
+		stroke: #000;
+		shape-rendering: crispEdges;
+	}
 
-circle.hidden {
-  fill: #ccc !important;
-}
+	.arc text {
+		font: 10px sans-serif;
+		text-anchor: middle;
+	}
 
-.extent {
-  fill: #000;
-  fill-opacity: .125;
-  stroke: #fff;
-}
+	.arc path {
+		stroke: #fff;
+	}
+	
+    .axis--x .domain,
+    .axis--grid .tick line {
+        stroke: #fff;
+    }
+
+    .axis--grid .tick--minor line {
+        stroke-opacity: .5;
+    }
+	
+	.border {
+		border:1px solid black;
+	}
+	
 </style>
 
 <body onresize="change_button()">
@@ -160,20 +186,23 @@ circle.hidden {
             </div>
 			<div class="timeline-filter" align="center">
             </div>
-            <div class="bar-scree">
-				<h4 class="center-align" style="margin-top:10px"></h4>
-				<br>
-				<div>
-
+            <div>
+                <div class="time-series border" style="float:left;width:50%" align="center">
+					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+					<br>
                 </div>
-                <div class="unemployment_chart" align="center">
+				<div class="unemployment-chart border" style="float:left;width:50%" align="center">
+					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+					<br>
                 </div>
-				<h4 class="center-align" style="margin-top:45px"></h4>
-				<br>
-                <div class="m-pie-chart" align="center">
-                </div>
-                <div class="scatter_matrix" align="center">
-                </div>
+				<div class="m-pie-chart border" style="float:left;width:100%" align="center">
+					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+					<br>
+				</div>
+				<div class="scatter-matrix border" style="clear:both" align="center">
+					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+					<br>
+				</div>
             </div>
         </div>
         <!-- main content area end -->
@@ -210,270 +239,612 @@ circle.hidden {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script lang="babel" type='text/babel'>
-
-        let data;
+		let toggleVar = 1;
+		let yearStart = new Date(1966, 1, 1);
+		let yearEnd = new Date(2018, 1, 1);
+		
+		let data;
         data = {{ data.ftr_data | safe }};
+		
+		const getData = function(s, e){
+			let postData = $.ajax({
+				url: 'getFeatureStats',
+				type: 'POST',
+				data: JSON.stringify({'s':s.getFullYear(), 'e':e.getFullYear()}),
+				contentType: 'application/json;charset=UTF-8',
+				async: false
+			}).responseText;
+			return postData;
+		};
+		
+		let multiLineData = [{"Year":2004,"Depression":87.83333333333333,"Mental":64.25,"Incidents":3},
+								{"Year":2005,"Depression":83.91666666666667,"Mental":60.666666666666664,"Incidents":5},
+								{"Year":2006,"Depression":76.25,"Mental":57.75,"Incidents":9},
+								{"Year":2007,"Depression":68.41666666666667,"Mental":56.666666666666664,"Incidents":14},
+								{"Year":2008,"Depression":67.25,"Mental":55.25,"Incidents":9},
+								{"Year":2009,"Depression":67.83333333333333,"Mental":53.583333333333336,"Incidents":10},
+								{"Year":2010,"Depression":65.66666666666667,"Mental":50.333333333333336,"Incidents":3},
+								{"Year":2011,"Depression":68.5,"Mental":50.833333333333336,"Incidents":9},
+								{"Year":2012,"Depression":68.16666666666667,"Mental":48.833333333333336,"Incidents":21},
+								{"Year":2013,"Depression":70.33333333333333,"Mental":51.416666666666664,"Incidents":21},
+								{"Year":2014,"Depression":76.33333333333333,"Mental":53.083333333333336,"Incidents":17},
+								{"Year":2015,"Depression":79.75,"Mental":56.25,"Incidents":72},
+								{"Year":2016,"Depression":82,"Mental":58.333333333333336,"Incidents":76},
+								{"Year":2017,"Depression":86.66666666666667,"Mental":63.333333333333336,"Incidents":20},
+								{"Year":2018,"Depression":91.25,"Mental":73.58333333333333,"Incidents":17}]
+		
+		let scatterData = [{"Year":1966,"Rate":3.8,"Incidents":2},{"Year":1971,"Rate":6,"Incidents":1},{"Year":1972,"Rate":5.2,"Incidents":1},
+							{"Year":1974,"Rate":7.2,"Incidents":2},{"Year":1976,"Rate":7.8,"Incidents":2},{"Year":1979,"Rate":6,"Incidents":2},
+							{"Year":1982,"Rate":10.8,"Incidents":3},{"Year":1983,"Rate":8.3,"Incidents":2},{"Year":1984,"Rate":7.3,"Incidents":5},
+							{"Year":1985,"Rate":7,"Incidents":2},{"Year":1986,"Rate":6.6,"Incidents":4},{"Year":1987,"Rate":5.7,"Incidents":2},
+							{"Year":1988,"Rate":5.3,"Incidents":7},{"Year":1989,"Rate":5.4,"Incidents":5},{"Year":1990,"Rate":6.09,"Incidents":2},
+							{"Year":1991,"Rate":7.14,"Incidents":8},{"Year":1992,"Rate":7.46,"Incidents":6},{"Year":1993,"Rate":6.92,"Incidents":13},
+							{"Year":1994,"Rate":6.18,"Incidents":5},{"Year":1995,"Rate":5.89,"Incidents":5},{"Year":1996,"Rate":5.91,"Incidents":4},
+							{"Year":1997,"Rate":5.47,"Incidents":8},{"Year":1998,"Rate":5.11,"Incidents":8},{"Year":1999,"Rate":4.87,"Incidents":12},
+							{"Year":2000,"Rate":4.32,"Incidents":2},{"Year":2001,"Rate":4.98,"Incidents":3},{"Year":2002,"Rate":5.72,"Incidents":2},
+							{"Year":2003,"Rate":6.02,"Incidents":4},{"Year":2004,"Rate":5.69,"Incidents":3},{"Year":2005,"Rate":5.43,"Incidents":5},
+							{"Year":2006,"Rate":4.97,"Incidents":9},{"Year":2007,"Rate":4.89,"Incidents":14},{"Year":2008,"Rate":5.75,"Incidents":9},
+							{"Year":2009,"Rate":8.88,"Incidents":10},{"Year":2010,"Rate":9.18,"Incidents":3},{"Year":2011,"Rate":8.52,"Incidents":9},
+							{"Year":2012,"Rate":7.65,"Incidents":21},{"Year":2013,"Rate":7.21,"Incidents":21},{"Year":2014,"Rate":6.09,"Incidents":17},
+							{"Year":2015,"Rate":5.4,"Incidents":72},{"Year":2016,"Rate":5.16,"Incidents":76},{"Year":2017,"Rate":4.4,"Incidents":20},
+							{"Year":2018,"Rate":4,"Incidents":17}]
+		
+		let scatterMatrixData = [{"Year":2004,"Rate":"-0.32680041634925877","Incidents":"-0.7964352951017168","Mental":"1.1996600131613229","Depression":"1.1606013459551903"},
+									{"Year":2005,"Rate":"-0.48874725545499076","Incidents":"-0.704891008308416","Mental":"1.6789582570909594","Depression":"0.5904126544153022"},
+									{"Year":2006,"Rate":"-0.7752685861805158","Incidents":"-0.5218024347218144","Mental":"-0.026812167610126204","Depression":"0.12822627770748316"},
+									{"Year":2007,"Rate":"-0.8250983828284332","Incidents":"-0.2929417177385625","Mental":"-0.8946408586975058","Depression":"-0.04489507989097903"},
+									{"Year":2008,"Rate":"-0.289428068863321","Incidents":"-0.5218024347218144","Mental":"-1.0230440833992094","Depression":"-0.2688410562339426"},
+									{"Year":2009,"Rate":"1.6601627249864477","Incidents":"-0.47603029132516406","Mental":"-0.9588424710483576","Depression":"-0.5340820353068153"},
+									{"Year":2010,"Rate":"1.8470244624161372","Incidents":"-0.7964352951017168","Mental":"-1.1990450551886145","Depression":"-1.0502695694306687"},
+									{"Year":2011,"Rate":"1.4359286400708187","Incidents":"-0.5218024347218144","Mental":"-0.8846785395396145","Depression":"-0.9708561026423836"},
+									{"Year":2012,"Rate":"0.8940296015247174","Incidents":"0.027463286037990302","Mental":"-0.9223139674694247","Depression":"-1.2885099697955242"},
+									{"Year":2013,"Rate":"0.6199657199611714","Incidents":"0.027463286037990302","Mental":"-0.6817424085455426","Depression":"-0.8776776349441303"},
+									{"Year":2014,"Rate":"-0.07765143310967212","Incidents":"-0.15562528754861127","Mental":"-0.017587798019487066","Depression":"-0.6129660789831768"},
+									{"Year":2015,"Rate":"-0.5074334291979594","Incidents":"2.3618425992671606","Mental":"0.3606113551967395","Depression":"-0.11001412265737232"},
+									{"Year":2016,"Rate":"-0.6569228191417117","Incidents":"2.544931172853762","Mental":"0.6096693341440104","Depression":"0.22087532229381732"},
+									{"Year":2017,"Rate":"-1.130305887296927","Incidents":"-0.018308857358660093","Mental":"1.1262340312198333","Depression":"1.015009990176669"},
+									{"Year":2018,"Rate":"-1.379454870536514","Incidents":"-0.15562528754861127","Mental":"1.6335743587050124","Depression":"2.642986059336512"}]
+		
+		const drawTimeline = function() {
+            let margin = {top: 10, right: 40, bottom: 10, left: 10},
+                width = 1000,
+                height = 37;
 
-         const drawScatter = function(){
-             let margin = {top: 20, right: 20, bottom: 30, left: 40},
-                            width = 400 - margin.left - margin.right,
-                            height = 200 - margin.top - margin.bottom;
+            let range = [new Date(1966, 1, 1), new Date(2018, 12, 30) - 1];
 
-             let x = d3.scaleLinear()
-                        .range([0, width]);
+            let x = d3.scaleTime()
+                        .domain(range)
+                        .rangeRound([0, width]);
 
-             let y = d3.scaleLinear()
-                        .range([height, 0]);
+            let svg = d3.select("div.timeline-filter").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+						.attr('class', 'timeline-svg')
+                        .append("g")
+                        .attr("transform", "translate(" + 30 + "," + 10 + ")");
 
-             let xAxis = d3.axisBottom(x);
+            svg.append("g")
+                .attr("class", "axis axis--grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x)
+                .ticks(d3.timeYear, 1)
+                .tickSize(-height)
+                .tickFormat(function() { return null; }))
+                .selectAll(".tick")
+                .classed("tick--minor", function(d) { return d.getYear(); });
 
-             let yAxis = d3.axisLeft(y);
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x)
+                .ticks(d3.timeYear)
+                .tickPadding(0))
+                .attr("text-anchor", null)
+                .selectAll("text")
+                .attr("transform", "rotate(-90)" )
+                .attr("x", 6)
+				.attr("y", -12);
 
-             let svg = d3.select(".unemployment_chart").append("svg")
-                            .attr("width", width + margin.left + margin.right)
-                            .attr("height", height + margin.top + margin.bottom)
-                            .append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            let brush = d3.brushX()
+                            .extent([[0, 0], [width, height]])
+                            .on("brush", brushmoved)
+                            .on("end", brushended);
 
-             d3.csv("{{ url_for('static',filename='data_files/csv/unemp_incident_rate.csv') }}", function(error, data) {
-                 console.log(data);
-                 if (error) throw error;
+            let yearBrush = svg.append("g")
+                                .attr("class", "brush")
+                                .call(brush);
 
-                 data.forEach(function (d) {
-                     d.Rate = +d.Rate;
-                     d.Incidents = +d.Incidents;
-                 });
+            // https://github.com/crossfilter/crossfilter/blob/gh-pages/index.html#L466
+            var brushResizePath = function(d) {
+                var e = +(d.type == "e"),
+                    x = e ? 1 : -1,
+                    y = height / 2;
+                return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) + "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+            };
 
-                 x.domain(d3.extent(data, function (d) {
-                     return d.Rate;
-                 })).nice();
-                 y.domain(d3.extent(data, function (d) {
-                     return d.Incidents;
-                 })).nice();
 
-                 svg.append("g")
-                     .attr("class", "x axis")
-                     .attr("transform", "translate(0," + height + ")")
-                     .call(xAxis)
-                     .append("text")
-                     .attr("class", "label")
-                     .attr("x", width)
-                     .attr("y", -6)
-                     .style("text-anchor", "end")
-                     .text("Rate");
+            var handle = yearBrush.selectAll(".handle--custom")
+            .data([{type: "w"}, {type: "e"}])
+            .enter().append("path")
+            .attr("class", "handle--custom")
+            .attr("stroke", "#000")
+            .attr("cursor", "ew-resize")
+            .attr("d", brushResizePath);
 
-                 svg.append("g")
-                     .attr("class", "y axis")
-                     .call(yAxis)
-                     .append("text")
-                     .attr("class", "label")
-                     .attr("transform", "rotate(-90)")
-                     .attr("y", 6)
-                     .attr("dy", ".71em")
-                     .style("text-anchor", "end")
-                     .text("Incidents");
+            yearBrush.call(brush.move, range.map(x));
 
-                 svg.selectAll(".dot")
-                     .data(data)
-                     .enter().append("circle")
-                     .attr("class", "dot")
-                     .attr("r", 3.5)
-                     .attr("cx", function (d) {
-                         return x(d.Rate);
-                     })
-                     .attr("cy", function (d) {
-                         return y(d.Incidents);
-                     })
-                     .style("fill", "blue");
+            function brushended() {
+                if (!d3.event.sourceEvent) return; // Only transition after input.
+                if (!d3.event.selection) return; // Ignore empty selections.
+                var d0 = d3.event.selection.map(x.invert),
+                d1 = d0.map(d3.timeYear.round);
 
-             });
-         };
-
-         const drawPie = function(data) {
-             console.log(data);
-             var width = 960,
-                    height = 500,
-                    radius = Math.min(width, height) / 2;
-
-             var color = d3.scaleOrdinal()
-                            .range(["#98abc5", "#8a89a6", "#7b6888"]);
-
-             var arc = d3.arc()
-                            .outerRadius(radius - 10)
-                            .innerRadius(0);
-
-             var labelArc = d3.arc()
-                                .outerRadius(radius - 40)
-                                .innerRadius(radius - 40);
-
-             var pie = d3.pie()
-                            .sort(null)
-                            .value(function(d) { return d; });
-
-             var svg = d3.select(".m-pie-chart").append("svg")
-                            .attr("width", width)
-                            .attr("height", height)
-                            .append("g")
-                            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-             var g = svg.selectAll(".arc")
-                        .data(pie(data))
-                        .enter().append("g")
-                        .attr("class", "arc");
-
-             g.append("path")
-                .attr("d", arc)
-                .style("fill", function(d) { return color(d.data); });
-
-                g.append("text")
-                .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-                .attr("dy", ".35em")
-                .text(function(d) { return d.data; });
-         };
-
-         const drawMatrix = function() {
-            var width = 960,
-                size = 230,
-                padding = 20;
-
-            var x = d3.scaleLinear()
-                .range([padding / 2, size - padding / 2]);
-
-            var y = d3.scaleLinear()
-                .range([size - padding / 2, padding / 2]);
-
-            var xAxis = d3.axisBottom()
-                .scale(x)
-                .ticks(6);
-
-            var yAxis = d3.axisLeft()
-                .scale(y)
-                .ticks(6);
-
-            var color = d3.scaleOrdinal(d3.schemeCategory10);
-
-            d3.csv("{{ url_for('static',filename='data_files/csv/scatter_scale.csv') }}", function(error, data) {
-              if (error) throw error;
-
-              var domainByTrait = {},
-                  traits = d3.keys(data[0]).filter(function(d) { return d !== "Year"; }),
-                  n = traits.length;
-
-              traits.forEach(function(trait) {
-                domainByTrait[trait] = d3.extent(data, function(d) { return d[trait]; });
-              });
-
-              xAxis.tickSize(size * n);
-              yAxis.tickSize(-size * n);
-
-              var brush = d3.brush()
-                  .on("start", brushstart)
-                  .on("brush", brushmove)
-                  .on("end", brushend)
-                  .extent([[0,0],[size,size]]);
-
-              var svg = d3.select(".scatter_matrix").append("svg")
-                  .attr("width", size * n + padding)
-                  .attr("height", size * n + padding)
-                .append("g")
-                  .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
-
-              svg.selectAll(".x.axis")
-                  .data(traits)
-                .enter().append("g")
-                  .attr("class", "x axis")
-                  .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
-                  .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
-
-              svg.selectAll(".y.axis")
-                  .data(traits)
-                .enter().append("g")
-                  .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
-                  .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
-
-              var cell = svg.selectAll(".cell")
-                  .data(cross(traits, traits))
-                .enter().append("g")
-                  .attr("class", "cell")
-                  .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; })
-                  .each(plot);
-
-              // Titles for the diagonal.
-              cell.filter(function(d) { return d.i === d.j; }).append("text")
-                  .attr("x", padding)
-                  .attr("y", padding)
-                  .attr("dy", ".71em")
-                  .text(function(d) { return d.x; });
-
-              cell.call(brush);
-
-              function plot(p) {
-                var cell = d3.select(this);
-
-                x.domain(domainByTrait[p.x]);
-                y.domain(domainByTrait[p.y]);
-
-                cell.append("rect")
-                    .attr("class", "frame")
-                    .attr("x", padding / 2)
-                    .attr("y", padding / 2)
-                    .attr("width", size - padding)
-                    .attr("height", size - padding);
-
-                cell.selectAll("circle")
-                    .data(data)
-                  .enter().append("circle")
-                    .attr("cx", function(d) { return x(d[p.x]); })
-                    .attr("cy", function(d) { return y(d[p.y]); })
-                    .attr("r", 4)
-                    .style("fill", "orange");
-              }
-
-              var brushCell;
-
-              // Clear the previously-active brush, if any.
-              function brushstart(p) {
-                if (brushCell !== this) {
-                  d3.select(brushCell).call(brush.move, null);
-                  brushCell = this;
-                x.domain(domainByTrait[p.x]);
-                y.domain(domainByTrait[p.y]);
+  // If empty when rounded, use floor & ceil instead.
+                if (d1[0] >= d1[1]) {
+                    d1[0] = d3.timeYear.floor(d0[0]);
+                    d1[1] = d3.timeYear.offset(d1[0]);
                 }
-              }
-
-              // Highlight the selected circles.
-              function brushmove(p) {
-                var e = d3.brushSelection(this);
-                svg.selectAll("circle").classed("hidden", function(d) {
-                  return !e
-                    ? false
-                    : (
-                      e[0][0] > x(+d[p.x]) || x(+d[p.x]) > e[1][0]
-                      || e[0][1] > y(+d[p.y]) || y(+d[p.y]) > e[1][1]
-                    );
-                });
-              }
-
-              // If the brush is empty, select all circles.
-              function brushend() {
-                var e = d3.brushSelection(this);
-                if (e === null) svg.selectAll(".hidden").classed("hidden", false);
-              }
-            });
-
-            function cross(a, b) {
-              var c = [], n = a.length, m = b.length, i, j;
-              for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
-              return c;
+				
+				console.log(d1);
+				yearStart = d1[0];
+				yearEnd = d1[1];
+                d3.select(this).transition().call(d3.event.target.move, d1.map(x));
+				drawVis(toggleVar, yearStart, yearEnd);
             }
 
-         };
+            function brushmoved() {
+                let s = d3.event.selection;
+                handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
 
-         drawScatter();
-         drawPie(data);
-         drawMatrix();
+            }
+        };
 
+		const drawScatter = function(b, e) {
+			let start = b.getFullYear()
+			let end = e.getFullYear()
+
+			let filteredData = []
+
+			$.each(scatterData, function(key, value) {
+				if (value['Year'] >= start && value['Year'] <= end)
+					filteredData.push(value);
+			});
+
+			let margin = {
+					top: 20,
+					right: 20,
+					bottom: 30,
+					left: 50
+				},
+				width = 480 - margin.left - margin.right,
+				height = 250 - margin.top - margin.bottom;
+
+			let x = d3.scaleLinear()
+				.range([0, width]);
+
+			let y = d3.scaleLinear()
+				.range([height, 0]);
+
+			let xAxis = d3.axisBottom(x);
+
+			let yAxis = d3.axisLeft(y);
+
+			let svg = d3.select(".unemployment-chart").append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			filteredData.forEach(function(d) {
+				d.Rate = +d.Rate;
+				d.Incidents = +d.Incidents;
+			});
+
+			x.domain(d3.extent(filteredData, function(d) {
+				return d.Rate;
+			})).nice();
+			y.domain(d3.extent(filteredData, function(d) {
+				return d.Incidents;
+			})).nice();
+
+			svg.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + height + ")")
+				.call(xAxis)
+				.append("text")
+				.attr("class", "label")
+				.attr("x", width)
+				.attr("y", -6)
+				.style("text-anchor", "end")
+				.text("Rate");
+
+			svg.append("g")
+				.attr("class", "y axis")
+				.call(yAxis)
+				.append("text")
+				.attr("class", "label")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 6)
+				.attr("dy", ".71em")
+				.style("text-anchor", "end")
+				.text("Incidents");
+
+			svg.selectAll(".dot")
+				.data(filteredData)
+				.enter().append("circle")
+				.attr("class", "dot")
+				.attr("r", 3.5)
+				.attr("cx", function(d) {
+					return x(d.Rate);
+				})
+				.attr("cy", function(d) {
+					return y(d.Incidents);
+				})
+				.style("fill", "steelblue");
+
+		};
+
+        const drawPie = function(data) {
+			var width = 480,
+				height = 250,
+				radius = Math.min(width, height) / 2.5;
+
+			var color = d3.scaleOrdinal()
+				.range(["#F26522", "#FAA979", "#A5A8AA"]);
+
+			var arc = d3.arc()
+				.outerRadius(radius - 10)
+				.innerRadius(0);
+
+			var labelArc = d3.arc()
+				.outerRadius(radius - 40)
+				.innerRadius(radius - 40);
+
+			var pie = d3.pie()
+				.sort(null)
+				.value(function(d) {
+					return d;
+				});
+
+			var svg = d3.select(".m-pie-chart").append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.append("g")
+				.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+			var g = svg.selectAll(".arc")
+				.data(pie(data))
+				.enter().append("g")
+				.attr("class", "arc");
+
+			g.append("path")
+				.attr("d", arc)
+				.style("fill", function(d) {
+					return color(d.data);
+				});
+
+			g.append("text")
+				.attr("transform", function(d) {
+					return "translate(" + labelArc.centroid(d) + ")";
+				})
+				.attr("dy", ".35em")
+				.text(function(d) {
+					return d.data;
+				});
+		};
+		
+		const drawMatrix = function(b, e) {
+			let start = b.getFullYear()
+			let end = e.getFullYear()
+
+			let filteredData = []
+
+			$.each(scatterMatrixData, function(key, value) {
+				if (value['Year'] >= start && value['Year'] <= end)
+					filteredData.push(value);
+			});
+			
+			var width = 300,
+				size = 135,
+				padding = 20;
+
+			var x = d3.scaleLinear()
+				.range([padding / 2, size - padding / 2]);
+
+			var y = d3.scaleLinear()
+				.range([size - padding / 2, padding / 2]);
+
+			var xAxis = d3.axisBottom()
+				.scale(x)
+				.ticks(6);
+
+			var yAxis = d3.axisLeft()
+				.scale(y)
+				.ticks(6);
+
+			var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+			var domainByTrait = {},
+				traits = d3.keys(filteredData[0]).filter(function(d) {
+					return d !== "Year";
+				}),
+				n = traits.length;
+
+			traits.forEach(function(trait) {
+				domainByTrait[trait] = d3.extent(filteredData, function(d) {
+					return d[trait];
+				});
+			});
+
+			xAxis.tickSize(size * n);
+			yAxis.tickSize(-size * n);
+
+			var brush = d3.brush()
+				.on("start", brushstart)
+				.on("brush", brushmove)
+				.on("end", brushend)
+				.extent([
+					[0, 0],
+					[size, size]
+				]);
+
+			var svg = d3.select(".scatter-matrix").append("svg")
+				.attr("width", size * n + padding)
+				.attr("height", size * n + padding)
+				.append("g")
+				.attr("transform", "translate(" + padding + "," + padding / 2 + ")");
+
+			svg.selectAll(".x.axis")
+				.data(traits)
+				.enter().append("g")
+				.attr("class", "x axis")
+				.attr("transform", function(d, i) {
+					return "translate(" + (n - i - 1) * size + ",0)";
+				})
+				.each(function(d) {
+					x.domain(domainByTrait[d]);
+					d3.select(this).call(xAxis);
+				});
+
+			svg.selectAll(".y.axis")
+				.data(traits)
+				.enter().append("g")
+				.attr("class", "y axis")
+				.attr("transform", function(d, i) {
+					return "translate(0," + i * size + ")";
+				})
+				.each(function(d) {
+					y.domain(domainByTrait[d]);
+					d3.select(this).call(yAxis);
+				});
+
+			var cell = svg.selectAll(".cell")
+				.data(cross(traits, traits))
+				.enter().append("g")
+				.attr("class", "cell")
+				.attr("transform", function(d) {
+					return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")";
+				})
+				.each(plot);
+
+			// Titles for the diagonal.
+			cell.filter(function(d) {
+					return d.i === d.j;
+				}).append("text")
+				.attr("x", padding)
+				.attr("y", padding)
+				.attr("dy", ".71em")
+				.text(function(d) {
+					return d.x;
+				});
+
+			cell.call(brush);
+
+			function plot(p) {
+				var cell = d3.select(this);
+
+				x.domain(domainByTrait[p.x]);
+				y.domain(domainByTrait[p.y]);
+
+				cell.append("rect")
+					.attr("class", "frame")
+					.attr("x", padding / 2)
+					.attr("y", padding / 2)
+					.attr("width", size - padding)
+					.attr("height", size - padding);
+
+				cell.selectAll("circle")
+					.data(filteredData)
+					.enter().append("circle")
+					.attr("cx", function(d) {
+						return x(d[p.x]);
+					})
+					.attr("cy", function(d) {
+						return y(d[p.y]);
+					})
+					.attr("r", 4)
+					.style("fill", "orange");
+			}
+
+			var brushCell;
+
+			// Clear the previously-active brush, if any.
+			function brushstart(p) {
+				if (brushCell !== this) {
+					d3.select(brushCell).call(brush.move, null);
+					brushCell = this;
+					x.domain(domainByTrait[p.x]);
+					y.domain(domainByTrait[p.y]);
+				}
+			}
+
+			// Highlight the selected circles.
+			function brushmove(p) {
+				var e = d3.brushSelection(this);
+				svg.selectAll("circle").classed("hidden", function(d) {
+					return !e ?
+						false :
+						(
+							e[0][0] > x(+d[p.x]) || x(+d[p.x]) > e[1][0] ||
+							e[0][1] > y(+d[p.y]) || y(+d[p.y]) > e[1][1]
+						);
+				});
+			}
+
+			// If the brush is empty, select all circles.
+			function brushend() {
+				var e = d3.brushSelection(this);
+				if (e === null) svg.selectAll(".hidden").classed("hidden", false);
+			}
+
+			function cross(a, b) {
+				var c = [],
+					n = a.length,
+					m = b.length,
+					i, j;
+				for (i = -1; ++i < n;)
+					for (j = -1; ++j < m;) c.push({
+						x: a[i],
+						i: i,
+						y: b[j],
+						j: j
+					});
+				return c;
+			}
+		};
+		
+		const drawMultiLine = function(b, e) {
+			let start = b.getFullYear()
+			let end = e.getFullYear()
+			
+			let filteredData = []
+			
+			$.each(multiLineData, function(key, value) {
+				if(value['Year'] >= start && value['Year'] <= end)
+					filteredData.push(value);
+			});
+			
+			// set the dimensions and margins of the graph
+			var margin = {top: 10, right: 10, bottom: 30, left: 25},
+				width = 480 - margin.left - margin.right,
+				height = 250 - margin.top - margin.bottom;
+
+			// set the ranges
+			var x = d3.scaleBand().range([0, width]).padding(0.95);
+			var y = d3.scaleLinear().range([height, 0]);
+
+			// define the 1st line
+			var valueline = d3.line()
+				.x(function(d) { return x(d.Year); })
+				.y(function(d) { return y(d.Depression); });
+
+			// define the 2nd line
+			var valueline2 = d3.line()
+				.x(function(d) { return x(d.Year); })
+				.y(function(d) { return y(d.Mental); });
+				
+			// define the 2nd line
+			var valueline3 = d3.line()
+				.x(function(d) { return x(d.Year); })
+				.y(function(d) { return y(d.Incidents); });
+			
+			// append the svg obgect to the body of the page
+			// appends a 'group' element to 'svg'
+			// moves the 'group' element to the top left margin
+			var svg = d3.select(".time-series").append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform",
+					  "translate(" + margin.left + "," + margin.top + ")");
+			
+			var legend = svg.append("g")
+						  .attr("font-family", "sans-serif")
+						  .attr("font-size", 10)
+						  .selectAll("g")
+						  .data(["Depression", "Mental", "Incidents"])
+						  .enter().append("g")
+						  .attr("transform", function(d, i) { return "translate(0," + i * 15 + ")"; });
+						  
+			let z = d3.scaleOrdinal()
+							.range(["steelblue", "red", "#FFA500"]);
+
+			// format the data
+			filteredData.forEach(function(d) {
+
+				d.Depression = +d.Depression;
+				d.Mental = +d.Mental;
+				d.Incidents = +d.Incidents;
+			});
+			
+			// Scale the range of the data
+			x.domain(filteredData.map(function(d) {
+				return d.Year;
+			}));
+			y.domain([0, d3.max(filteredData, function(d) {
+				return Math.max(Math.max(d.Depression, d.Mental), d.Incidents) + 30;
+			})]);
+
+			// Add the valueline path.
+			svg.append("path")
+				.data([filteredData])
+				.attr("class", "line")
+				.attr("d", valueline);
+
+			// Add the valueline2 path.
+			svg.append("path")
+				.data([filteredData])
+				.attr("class", "line")
+				.style("stroke", "red")
+				.attr("d", valueline2);
+
+			// Add the valueline3 path.
+			svg.append("path")
+				.data([filteredData])
+				.attr("class", "line")
+				.style("stroke", "#FFA500")
+				.attr("d", valueline3);
+
+			// Add the X Axis
+			svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svg.append("g")
+				.call(d3.axisLeft(y));
+
+			legend.append("rect")
+				.attr("x", width - 69)
+				.attr("width", 10)
+				.attr("height", 10)
+				.attr("fill", z);
+
+			legend.append("text")
+				.attr("x", width - 54)
+				.attr("y", 5.25)
+				.attr("dy", "0.32em")
+				.text(function(d) {
+					return d;
+				});
+		}
+		
+		const drawVis = function(toggleIndex, s, e) {
+			let featureData = JSON.parse(getData(s, e));
+			data = featureData['ftr_data'];
+		    document.querySelector(".unemployment-chart").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
+		    document.querySelector(".time-series").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
+			document.querySelector(".m-pie-chart").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
+			document.querySelector(".scatter-matrix").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
+			drawMultiLine(s, e);
+			drawScatter(s, e);
+			drawPie(data);
+			drawMatrix(s, e);
+        };
+		
+		drawTimeline();
+		drawVis(toggleVar, yearStart, yearEnd)
 
     </script>
 </body>

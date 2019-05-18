@@ -146,6 +146,20 @@ def data_features():
     data = {'ftr_data': data}
     return render_template('features.html', data=data)
 
+@app.route("/getFeatureStats", methods=['POST'])
+def feature_stats():
+    if request.method == 'POST':
+        data = request.get_json()
+        start = int(data['s'])
+        end = int(data['e'])
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        shooting_dataset = config['DATA']['INPUT_CSV_1']
+        df = prepare_data(shooting_dataset)
+        data = get_mental_distribution(df,start,end)
+        data = {'ftr_data': data}
+        return json.dumps(data)
+
 
 @app.route("/stackChart", methods=['POST', 'GET'])
 def stack_chart_api():

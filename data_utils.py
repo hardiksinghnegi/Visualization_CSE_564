@@ -162,7 +162,8 @@ def process_google_index(data):
 
 
 def get_mental_distribution(data,start,end):
-    data = data[['Mental Health']]
+    data = data[['Mental Health', 'Year']]
+    data = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
     data = data.groupby('Mental Health').size().reset_index(name='counts')
     res_list = data['counts'].tolist()
     print(data)
