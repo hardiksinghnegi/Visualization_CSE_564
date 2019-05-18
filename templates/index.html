@@ -828,8 +828,9 @@
 				.attr("y", function(d) { return y(d[1]); })
 				.attr("height", function(d) { return y(d[0]) - y(d[1]); })
 				.attr("width", x.bandwidth())
-				.on("mouseover", function() { tooltip.style("display", null); })
-				.on("mouseout", function() { tooltip.style("display", "none"); })
+				.style('cursor', 'pointer')
+				.on("mouseover", function() { tooltip.style("visibility", "visible"); })
+				.on("mouseout", function() { tooltip.style("visibility", "hidden"); })
 				.on("mousemove", function(d) {
 						console.log(d);
 						var xPosition = d3.mouse(this)[0] - 5;
@@ -886,8 +887,7 @@
 
   // Prep the tooltip bits, initial display is hidden
         var tooltip = svg.append("g")
-                        .attr("class", "tooltip")
-                        .style("display", "none");
+                        .style("visibility", "hidden");
 
         tooltip.append("rect")
                 .attr("width", 60)
@@ -900,7 +900,9 @@
                 .attr("dy", "1.2em")
                 .style("text-anchor", "middle")
                 .attr("font-size", "12px")
-                .attr("font-weight", "bold");
+                .attr("font-weight", "bold")
+				.attr("color", "black");
+
 
         };
 
