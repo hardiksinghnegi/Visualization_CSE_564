@@ -24,22 +24,25 @@
     <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 	<!-- jquery latest version -->
     <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
-	<script>
-		function change_button(){
-			$('.page-container').toggleClass('sbar_collapsed2');
-		}
 
-		function on_change(){
-			if($('.custom-control.custom-switch label').text() == 'Switch to Time Series Chart')
-				$('.custom-control.custom-switch label').text('Switch to Bar Chart');
-			else
-				$('.custom-control.custom-switch label').text('Switch to Time Series Chart');
-		}
-	</script>
 </head>
 
 <style> /* set the CSS */
 
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
 </style>
 
 <body onresize="change_button()">
@@ -115,7 +118,7 @@
                 </div>
 				<h4 class="center-align" style="margin-top:45px"></h4>
 				<br>
-                <div class="stack-chart" align="center">
+                <div id="gauge-chart" align="center">
                 </div>
             </div>
         </div>
@@ -143,6 +146,7 @@
     <script src="{{ url_for('static',filename='styles/js/plugins.js') }}"></script>
     <script src="{{ url_for('static',filename='styles/js/scripts.js') }}"></script>
 
+
     <!-- load the d3.js library -->
     <script src="http://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
@@ -153,7 +157,92 @@
 
     <script lang="babel" type='text/babel'>
 
-    
+        let data;
+        data = {{ data.ftr_data | safe }};
+
+         const drawScatter = function(){
+             let margin = {top: 20, right: 20, bottom: 30, left: 40},
+                            width = 400 - margin.left - margin.right,
+                            height = 200 - margin.top - margin.bottom;
+
+             let x = d3.scaleLinear()
+                        .range([0, width]);
+
+             let y = d3.scaleLinear()
+                        .range([height, 0]);
+
+             let xAxis = d3.axisBottom(x);
+
+             let yAxis = d3.axisLeft(y);
+
+             let svg = d3.select(".unemployment_chart").append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+             d3.csv("{{ url_for('static',filename='data_files/csv/unemp_incident_rate.csv') }}", function(error, data) {
+                 console.log(data);
+                 if (error) throw error;
+
+                 data.forEach(function (d) {
+                     d.Rate = +d.Rate;
+                     d.Incidents = +d.Incidents;
+                 });
+
+                 x.domain(d3.extent(data, function (d) {
+                     return d.Rate;
+                 })).nice();
+                 y.domain(d3.extent(data, function (d) {
+                     return d.Incidents;
+                 })).nice();
+
+                 svg.append("g")
+                     .attr("class", "x axis")
+                     .attr("transform", "translate(0," + height + ")")
+                     .call(xAxis)
+                     .append("text")
+                     .attr("class", "label")
+                     .attr("x", width)
+                     .attr("y", -6)
+                     .style("text-anchor", "end")
+                     .text("Rate");
+
+                 svg.append("g")
+                     .attr("class", "y axis")
+                     .call(yAxis)
+                     .append("text")
+                     .attr("class", "label")
+                     .attr("transform", "rotate(-90)")
+                     .attr("y", 6)
+                     .attr("dy", ".71em")
+                     .style("text-anchor", "end")
+                     .text("Incidents");
+
+                 svg.selectAll(".dot")
+                     .data(data)
+                     .enter().append("circle")
+                     .attr("class", "dot")
+                     .attr("r", 3.5)
+                     .attr("cx", function (d) {
+                         return x(d.Rate);
+                     })
+                     .attr("cy", function (d) {
+                         return y(d.Incidents);
+                     })
+                     .style("fill", "blue");
+
+             });
+         };
+
+         const drawPie = function(data) {
+             console.log(data)
+         };
+
+         drawScatter();
+         drawPie(data);
+
+
 
     </script>
 </body>

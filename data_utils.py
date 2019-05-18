@@ -1,6 +1,6 @@
 import pandas as pd
 import configparser
-
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 def prepare_data(data_file):
     """
@@ -141,9 +141,10 @@ def get_year_stack(data):
 
 
 def process_unemployment_rate(data):
-    country_data = data[['Year', 'Rate']]
-    data = country_data.groupby(['Year'])['Rate'].mean()
-    data.to_csv('static/data_files/csv/national_unemp.csv')
+    scaler = StandardScaler()
+    data[['Rate', 'Incidents']] = scaler.fit_transform(data[['Rate','Incidents']])
+    print(data[['Rate', 'Incidents']].corr())
+    # data.to_csv('static/data_files/csv/unemp.csv', index=False)
 
 
 def process_national_unemployment_data(data):
@@ -155,6 +156,12 @@ def process_google_index(data):
     data = data.groupby('Year')['Depression', 'Mental Health'].mean()
     data.to_csv('static/data_files/csv/google_index.csv')
 
+def get_mental_distribution(data,start,end):
+    data = data[['Mental Health']]
+    data = data.groupby('Mental Health').size().reset_index(name='counts')
+    res_list = data['counts'].tolist()
+    print(data)
+    return res_list
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -163,16 +170,23 @@ unemployment_dataset = config['DATA']['INPUT_CSV_2']
 n_unemployment_dataset = config['DATA']['INPUT_CSV_3']
 g_index_dataset = config['DATA']['INPUT_CSV_4']
 
+x = config['DATA']['INPUT_CSV_5']
+
 df = prepare_data(shooting_dataset)
 
 s_df = pd.read_csv(unemployment_dataset)
 g_df = pd.read_csv(g_index_dataset)
 
-# n_df = pd.read_csv(n_unemployment_dataset)
-#
-# process_national_unemployment_data(n_df)
+h_df = pd.read_csv(x)
 
-process_google_index(g_df)
+get_mental_distribution(df,1960,2019)
+# process_unemployment_rate(h_df)
+#
+# # n_df = pd.read_csv(n_unemployment_dataset)
+# #
+# # process_national_unemployment_data(n_df)
+#
+# process_google_index(g_df)
 
 # process_unemployment_rate(s_df)
 # render_race_csv_by_year_govt(df, 2000, 2020, "Republican")

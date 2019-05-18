@@ -138,7 +138,13 @@ def index_year_data():
 
 @app.route("/features", methods=['POST', 'GET'])
 def data_features():
-    return render_template('features.html')
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    shooting_dataset = config['DATA']['INPUT_CSV_1']
+    df = prepare_data(shooting_dataset)
+    data = get_mental_distribution(df,1960,2020)
+    data = {'ftr_data': data}
+    return render_template('features.html', data=data)
 
 
 if __name__ == "__main__":
