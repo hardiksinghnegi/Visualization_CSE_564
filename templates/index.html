@@ -402,6 +402,17 @@
 			return postYearData;
 		};
 
+		const getStackData = function(s,e){
+		    let stackData =  $.ajax({
+				url: 'stackChart',
+				type: 'POST',
+				data: JSON.stringify({'s':s.getFullYear(), 'e':e.getFullYear(), 'state':document.getElementById("state-filter").value}),
+				contentType: 'application/json;charset=UTF-8',
+				async: false
+			}).responseText;
+			return stackData;
+        };
+
         const drawTimeline = function() {
             let margin = {top: 10, right: 40, bottom: 10, left: 10},
                 width = 1000,
@@ -636,7 +647,7 @@
                 for (var i=0; i<data.length; i++){
                     data[i]['date'] = new Date(data[i]['date']);
                 }
-				console.log(data);
+
 				data.sort((a, b) => a.date - b.date);
 				
 				let filteredData = [];
@@ -644,7 +655,7 @@
 					if(data[i]['date'].getFullYear() >= startYear.getFullYear() && data[i]['date'].getFullYear() <= endYear.getFullYear())
 						filteredData.push(data[i])
 				}
-				console.log(filteredData);
+
 				
 				x.domain([filteredData[0].date, filteredData[filteredData.length - 1].date]);
 				y.domain(d3.extent(filteredData, d => d.count));
@@ -771,7 +782,7 @@
 
         };
 
-        const stackChart = function() {
+        const stackChart = function(data) {
             let svg = d3.select(".stack-chart")
 						.append('svg')
 						.attr('width', 900)
@@ -793,12 +804,13 @@
             let z = d3.scaleOrdinal()
                         .range(["#FFA500", "#F87E2C"]);
 
-            d3.csv("{{ url_for('static',filename='data_files/csv/data.csv') }}", function(error, data) {
+
 				console.log(data);
 				console.log("test");
-				if (error) throw error;
 
-				var keys = data.columns.slice(1);
+
+				var keys = ["Dead", "Injured"];
+
 
 				x.domain(data.map(function(d) { return d.Year; }));
 				y.domain([0, 800]);
@@ -870,7 +882,7 @@
                     .attr("y", 9.5)
                     .attr("dy", "0.32em")
                     .text(function(d) { return d; });
-        });
+
 
   // Prep the tooltip bits, initial display is hidden
         var tooltip = svg.append("g")
@@ -899,11 +911,16 @@
 			document.getElementById('injuries').innerHTML = statData['injuries'];
 			document.getElementById('fatalities').innerHTML = statData['fatalities'];
 			document.querySelector(".year-chart").innerHTML = '';
+			document.querySelector(".stack-chart").innerHTML = '';
 
             let yearData = JSON.parse(getYearData());
-            console.log("test_beg");
-			console.log(yearData);
-			console.log("test_end");
+
+            let stackData  = JSON.parse(getStackData(yearStart,yearEnd));
+            console.log("test");
+            console.log(stackData);
+            console.log("test2");
+
+            stackChart(stackData);
 
             if (toggleIndex == 1) {
 				drawScree(yearData['scree'], yearStart, yearEnd);
@@ -913,7 +930,7 @@
             }
         };
 
-        stackChart();
+
 
         $(function() {
             $('#toggleVis').change(function() {

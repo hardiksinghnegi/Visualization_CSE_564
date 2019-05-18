@@ -136,8 +136,11 @@ def get_index_stats(data, start, end, state):
 
 def get_year_stack(data):
     csv_df = data[['Year', 'Dead', 'Injured']]
-    csv_df=csv_df.groupby('Year')['Dead', 'Injured'].sum()
-    csv_df.to_csv('static/data_files/csv/data.csv')
+    csv_df = csv_df.groupby(['Year'])['Dead', 'Injured'].sum()
+    csv_df.reset_index(level=0, inplace=True)
+    # print(csv_df)
+    # csv_df.to_csv('static/data_files/csv/data.csv')
+    return csv_df
 
 
 def process_unemployment_rate(data):
@@ -166,6 +169,28 @@ def get_mental_distribution(data,start,end):
     return res_list
 
 
+def get_stack_chart_data(data, start, end, state="All"):
+    csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
+    if state != "All":
+        csv_df = csv_df.loc[csv_df['State'] == state]
+
+    csv_df = get_year_stack(csv_df)
+    result_list = []
+
+    # print(csv_df['Year'])
+    for index, row in csv_df.iterrows():
+        race_obj = {
+                        'Year' : int(row['Year']),
+                        'Dead'  : str(row['Dead']),
+                        'Injured' : str(row['Injured'])
+                    }
+
+        result_list.append(race_obj)
+
+    return result_list
+
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
@@ -182,8 +207,9 @@ g_df = pd.read_csv(g_index_dataset)
 
 h_df = pd.read_csv(x)
 
+# get_stack_chart_data(df,1966,2018,"Alabama")
 
-process_unemployment_rate(h_df)
+# process_unemployment_rate(h_df)
 #
 # # n_df = pd.read_csv(n_unemployment_dataset)
 # #

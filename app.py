@@ -147,5 +147,22 @@ def data_features():
     return render_template('features.html', data=data)
 
 
+@app.route("/stackChart", methods=['POST', 'GET'])
+def stack_chart_api():
+
+    if request.method == 'POST':
+        data = request.get_json()
+        start = int(data['s'])
+        end = int(data['e'])
+        state = str(data['state'])
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        shooting_dataset = config['DATA']['INPUT_CSV_1']
+        df = prepare_data(shooting_dataset)
+        result = get_stack_chart_data(df,start,end,state)
+        print(result)
+        return json.dumps(result)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
