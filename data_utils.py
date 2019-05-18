@@ -198,6 +198,12 @@ def get_incidents_per_state_filter(data, start, end, govt="Both"):
     return result
 
 
+def render_laws_csv(data):
+    csv_df = data.groupby('year')['lawtotal'].mean()
+    csv_df.to_csv('static/data_files/csv/law_year.csv')
+    print(csv_df)
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
@@ -205,9 +211,11 @@ unemployment_dataset = config['DATA']['INPUT_CSV_2']
 n_unemployment_dataset = config['DATA']['INPUT_CSV_3']
 g_index_dataset = config['DATA']['INPUT_CSV_4']
 
-x = config['DATA']['INPUT_CSV_6']
+x = config['DATA']['INPUT_CSV_7']
 
-df = prepare_data(shooting_dataset)
+
+render_laws_csv(pd.read_csv(x))
+# df = prepare_data(shooting_dataset)
 # get_incidents_per_state_filter(df,1966,2000,"Both")
 
 # s_df = pd.read_csv(unemployment_dataset)
