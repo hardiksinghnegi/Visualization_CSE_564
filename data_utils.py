@@ -151,21 +151,30 @@ def process_national_unemployment_data(data):
     df.to_csv('static/data_files/csv/national_unemp.csv')
 
 
+def process_google_index(data):
+    data = data.groupby('Year')['Depression', 'Mental Health'].mean()
+    data.to_csv('static/data_files/csv/google_index.csv')
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
 unemployment_dataset = config['DATA']['INPUT_CSV_2']
 n_unemployment_dataset = config['DATA']['INPUT_CSV_3']
+g_index_dataset = config['DATA']['INPUT_CSV_4']
 
 df = prepare_data(shooting_dataset)
 
 s_df = pd.read_csv(unemployment_dataset)
+g_df = pd.read_csv(g_index_dataset)
 
 # n_df = pd.read_csv(n_unemployment_dataset)
 #
 # process_national_unemployment_data(n_df)
 
-process_unemployment_rate(s_df)
+process_google_index(g_df)
+
+# process_unemployment_rate(s_df)
 # render_race_csv_by_year_govt(df, 2000, 2020, "Republican")
 # # get_scree_incidents(df)
 # # # # get_year_bar_data(df)

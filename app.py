@@ -136,5 +136,10 @@ def index_year_data():
         return json.dumps(result_dict)
 
 
+@app.route("/features", methods=['POST', 'GET'])
+def data_features():
+    return render_template('features.html')
+
+
 if __name__ == "__main__":
     app.run(debug=True)

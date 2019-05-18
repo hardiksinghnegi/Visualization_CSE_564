@@ -1,0 +1,161 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>CSE564 Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png"  href= "{{ url_for('static',filename='styles/images/icon/favicon.ico') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/themify-icons.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/metisMenu.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/slicknav.min.css') }}">
+    <!-- amchart css -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <!-- others css -->
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/typography.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/default-css.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/styles.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/responsive.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/css/ethincmix.css') }}">
+    <!-- modernizr css -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+	<!-- jquery latest version -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
+	<script>
+		function change_button(){
+			$('.page-container').toggleClass('sbar_collapsed2');
+		}
+
+		function on_change(){
+			if($('.custom-control.custom-switch label').text() == 'Switch to Time Series Chart')
+				$('.custom-control.custom-switch label').text('Switch to Bar Chart');
+			else
+				$('.custom-control.custom-switch label').text('Switch to Time Series Chart');
+		}
+	</script>
+</head>
+
+<style> /* set the CSS */
+
+</style>
+
+<body onresize="change_button()">
+    <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <!-- preloader area start -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+    <!-- preloader area end -->
+    <!-- page container area start -->
+    <div class="page-container">
+        <!-- sidebar menu area start -->
+        <div class="sidebar-menu">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="index.html"><img src="{{ url_for('static',filename='styles/images/icon/sbu_logo_dark.png') }}" width="100" alt="logo"></a>
+                </div>
+            </div>
+            <div class="main-menu">
+                <div class="menu-inner">
+                    <nav>
+                        <ul class="metismenu" id="menu">
+                            <li>
+                                <a href="home" aria-expanded="true"><i class="ti-pie-chart"></i><span>Home</span></a>
+                            </li>
+							<li>
+                                <a href="maps" aria-expanded="true"><i class="ti-pie-chart"></i><span>Map Charts</span></a>
+                            </li>
+                            <li>
+                                <a href="rmix" aria-expanded="true"><i class="ti-pie-chart"></i><span>Racial Distribution</span></a>
+                            </li>
+                            <li>
+                                <a href="features" aria-expanded="true"><i class="ti-pie-chart"></i><span>Feature Analysis</span></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar menu area end -->
+        <!-- main content area start -->
+        <div class="main-content">
+            <!-- header area start -->
+            <div class="header-area">
+                <div class="row align-items-center">
+                    <!-- nav and search button -->
+                    <div>
+                        <div class="nav-btn pull-left">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <!-- profile info & task notification -->
+					<h3 class="center-align">FEATURE RELATIONS WITH SHOOTINGS</h3>
+                </div>
+            </div>
+            <!-- header area end -->
+            <!-- page title area start -->
+            <div class="page-title-area">
+            </div>
+			<div class="timeline-filter" align="center">
+            </div>
+            <div class="bar-scree">
+				<h4 class="center-align" style="margin-top:10px"></h4>
+				<br>
+				<div>
+
+                </div>
+                <div class="unemployment_chart" align="center">
+                </div>
+				<h4 class="center-align" style="margin-top:45px"></h4>
+				<br>
+                <div class="stack-chart" align="center">
+                </div>
+            </div>
+        </div>
+        <!-- main content area end -->
+		<!--
+        <footer>
+            <div class="footer-area">
+                <p>Dashboard developed by Hardik Singh Negi & Ayush Garg</p>
+            </div>
+        </footer>
+        <!-- footer area end-->
+    </div>
+    <!-- page container area end -->
+    <!-- bootstrap 4 js -->
+    <!-- jquery latest version -->
+    <script src="{{ url_for('static',filename='styles/js/vendor/jquery-2.2.4.min.js') }}"></script>
+    <!-- bootstrap 4 js -->
+    <script src="{{ url_for('static',filename='styles/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/metisMenu.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/jquery.slimscroll.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/jquery.slicknav.min.js') }}"></script>
+
+    <!-- others plugins -->
+    <script src="{{ url_for('static',filename='styles/js/plugins.js') }}"></script>
+    <script src="{{ url_for('static',filename='styles/js/scripts.js') }}"></script>
+
+    <!-- load the d3.js library -->
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+    <script src='https://npmcdn.com/babel-core@5.8.34/browser.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script lang="babel" type='text/babel'>
+
+
+
+    </script>
+</body>
+
+</html>
