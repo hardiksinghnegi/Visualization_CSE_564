@@ -108,13 +108,15 @@ def render_state_csv_by_year(data, start, end):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
     return get_incidents_per_state(csv_df)
 
+
 def render_race_csv_by_year_govt(data, start, end, govt):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
     if govt != 'Both':
-        csv_df = data.loc[data['Party'] == govt]
+        csv_df = csv_df.loc[data['Party'] == govt]
     data = get_incident_race_distribution(csv_df)
     data = {'distribution_data': data}
     return data
+
 
 def get_index_stats(data, start, end, state):
     csv_df = data.loc[(data['Year'] >= start) & (data['Year'] <= end)]
@@ -138,15 +140,37 @@ def get_year_stack(data):
     csv_df.to_csv('static/data_files/csv/data.csv')
 
 
+def process_unemployment_rate(data):
+    country_data = data[['Year', 'Rate']]
+    data = country_data.groupby(['Year'])['Rate'].mean()
+    data.to_csv('static/data_files/csv/national_unemp.csv')
+
+
+def process_national_unemployment_data(data):
+    df = data.interpolate(method ='linear', limit_direction ='backward')
+    df.to_csv('static/data_files/csv/national_unemp.csv')
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 shooting_dataset = config['DATA']['INPUT_CSV_1']
+unemployment_dataset = config['DATA']['INPUT_CSV_2']
+n_unemployment_dataset = config['DATA']['INPUT_CSV_3']
+
 df = prepare_data(shooting_dataset)
 
-# get_scree_incidents(df)
-# # # get_year_bar_data(df)
-# get_index_stats(df, 1966, 2018, "Alaska")
-# get_incident_race_distribution(df)
-# render_state_csv_by_year(df, 1966, 2019)
-get_year_stack(df)
+s_df = pd.read_csv(unemployment_dataset)
+
+# n_df = pd.read_csv(n_unemployment_dataset)
+#
+# process_national_unemployment_data(n_df)
+
+process_unemployment_rate(s_df)
+# render_race_csv_by_year_govt(df, 2000, 2020, "Republican")
+# # get_scree_incidents(df)
+# # # # get_year_bar_data(df)
+# # get_index_stats(df, 1966, 2018, "Alaska")
+# # get_incident_race_distribution(df)
+# # render_state_csv_by_year(df, 1966, 2019)
+# get_year_stack(df)
 

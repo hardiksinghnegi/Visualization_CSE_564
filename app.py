@@ -70,11 +70,13 @@ def data_race_by_year():
         start = int(data['s'])
         end = int(data['e'])
         govt = data['govt']
+
         config = configparser.ConfigParser()
         config.read('config.ini')
         shooting_dataset = config['DATA']['INPUT_CSV_1']
         df = prepare_data(shooting_dataset)
         result = render_race_csv_by_year_govt(df, start, end, govt)
+
         status_dict = {'status' : '1',
                        'data'   :  result}
         return json.dumps(status_dict)
@@ -87,7 +89,12 @@ def racial_mix():
     shooting_dataset = config['DATA']['INPUT_CSV_1']
     df = prepare_data(shooting_dataset)
     data = get_incident_race_distribution(df)
-    data = {'distribution_data': data}
+    state_data = get_incidents_per_state(df)
+    data_dict = {
+                    'distribution' : data,
+                    'state_data'   : state_data
+                }
+    data = {'distribution_data': data_dict}
     return render_template('racial_mix.html', data=data)
 
 
