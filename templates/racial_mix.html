@@ -202,24 +202,34 @@
             <div class="timeline-filter" align="center">
             </div>
             <!-- page title area end -->
-			<br>
-			<h4 class="center-align">ETHNIC DISTRIBUTION OF SHOOTERS</h4>
-			<br>
-			<div class="border" style="width:15%;margin-left:5%;margin-bottom:20px">
-				<div class="tile-header tile-header-left border">
-					<h6 style="padding-left:5px">Select Govt:</h6>
+            <div class="year-chart" align="center" valign="center" style="float:left;width:40%;">
+				<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5>
+				<br>
+            </div>
+			<div class="horizontal-bar" style="float:left;width:35%">
+            </div>
+			<div class="filters" align="center" style="float:left;width:25%">
+				<div class="border" style="width:156px;margin-top:20px">
+					<div class="tile-header tile-header-left border">
+						<h6 style="padding-left:5px">Select Govt</h6>
+					</div>
+					<select id="govt-filter" style="width:100%;">
+						<option value="Both">Both</option>
+						<option value="Republican">Republican</option>
+						<option value="Democratic">Democratic</option>
+					</select>
 				</div>
-				<select id="govt-filter" style="width:100%">
-					<option value="Both">Both</option>
-					<option value="Republican">Republican</option>
-					<option value="Democratic">Democratic</option>
-				</select>
-			</div>
-			<div class="horizontal-bar" style="float:left;width:20%">
-            </div>
-            <div class="year-chart" align="center" style="float:left;width:80%">
-            </div>
-			<div class="ethnic-mix">
+				<div class="border" style="width:156px;margin-top:20px">
+					<div class="tile-header tile-header-left border">
+						<h6 style="padding-left:5px">Selected State</h6>
+					</div>
+					<div align="left">
+						<span id="state-label" style="padding-left:5px">All</span>
+					</div>
+				</div>
+				<div id="clear-state" style="width:156px;margin-top:20px;position:relative;z-index:3000">
+					<button style="width:100%">Clear State Filter</button>
+				</div>
             </div>
         </div>
         <!-- main content area end -->
@@ -255,6 +265,7 @@
 		let toggleVar = 1;
 		let yearStart = new Date(1966, 1, 1);
 		let yearEnd = new Date(2018, 1, 1);
+		let state = "All";
 		
         let data_dict;
 		data_dict = {{ data.distribution_data | safe }};
@@ -263,11 +274,11 @@
 		let state_data = data_dict['state_data'];
 
 
-		const getData = function(start, end, govt){
+		const getData = function(start, end, govt, st){
 			var postData = $.ajax({
 				url: 'getRaceDataByYear',
 				type: 'POST',
-				data: JSON.stringify({'s':start.getFullYear(), 'e':end.getFullYear(), 'govt':govt}),
+				data: JSON.stringify({'s':start.getFullYear(), 'e':end.getFullYear(), 'govt':govt, 'state':st}),
 				contentType: 'application/json;charset=UTF-8',
 				async: false
 			}).responseText;
@@ -276,10 +287,8 @@
 		};
 
 		const drawHorizontalBarChart = function(data) {
-		    console.log(data);
-		    console.log('test');
 			// set the dimensions and margins of the graph
-			var margin = {top: 20, right: 20, bottom: 30, left: 100},
+			var margin = {top: 20, right: 20, bottom: 10, left: 100},
 			width = 200 - margin.left - margin.right,
 			height = 500 - margin.top - margin.bottom;
 
@@ -290,12 +299,15 @@
 
 			var x = d3.scaleLinear()
 						.range([0, width]);
+						
+			var newX = d3.scaleLinear()
+						.range([0, width*5]);
 
 			// append the svg object to the body of the page
 			// append a 'group' element to 'svg'
 			// moves the 'group' element to the top left margin
 			var svg = d3.select("div.horizontal-bar").append("svg")
-						.attr("width", width + margin.left + margin.right)
+						.attr("width", 380 + margin.left + margin.right)
 						.attr("height", height + margin.top + margin.bottom)
 						.append("g")
 						.attr("transform", 
@@ -315,11 +327,49 @@
 					//.attr("x", function(d) { return x(d.sales); })
 					.attr("width", function(d) {return x(d.cases); } )
 					.attr("y", function(d) { return y(d.state); })
-					.attr("height", y.bandwidth());
+					.attr("height", y.bandwidth())
+					.style('cursor', 'pointer')
+					.on('mouseover', function(d, i){
+						d3.select(this)
+						.attr("y", function(d) {
+							return y(d.state) - 2.5
+						})      
+						.attr("height", function(d) {
+							return y.bandwidth() + 5;
+						})
+						.style("fill", "#FFA500");
+					})
+					.on('mouseout', function(d, i){
+						d3.select(this)
+						.attr("y", function(d) {
+							return y(d.state)
+						})     
+						.attr("height", function(d) {
+							return y.bandwidth()
+						})
+						.style("fill", "steelblue")
+						.style('cursor', 'pointer');
+					})
+					.on('click', function(d, i){
+						state = d.state
+						document.getElementById('state-label').innerHTML = d.state
+						drawVis(toggleVar, yearStart, yearEnd)
+					})
 
 				// add the y Axis
 				svg.append("g")
 					.call(d3.axisLeft(y));
+				
+				// add the x Axis
+				svg.append("g")
+					.call(d3.axisBottom(newX).tickValues([]))
+					.attr("transform", "translate(0," + height + ")")
+					.append("text")
+					.attr("class", "label")
+					.attr("x",350)
+					.attr("y", -10)
+					.style("fill", "black")
+					.text("Incident Count");
 
 		};
 		
@@ -407,8 +457,6 @@
 				yearStart = d1[0];
 				yearEnd = d1[1];
                 d3.select(this).transition().call(d3.event.target.move, d1.map(x));
-				let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value));
-				data = status['data']['distribution_data'];
 				drawVis(toggleVar, yearStart, yearEnd);
             }
 
@@ -420,35 +468,73 @@
 
         const drawEthincMix = function(data) {
                 var donut = donutChart()
-                            .width(800)
-                            .height(450)
+                            .width(520)
+                            .height(300)
                             .cornerRadius(3) // sets how rounded the corners are on each slice
                             .padAngle(0.015) // effectively dictates the gap between slices
                             .variable('Distribution')
                             .category('Race');
 
-
                     console.log(data);
                     d3.select('.year-chart')
                     .datum(data) // bind data to the div
                     .call(donut); // draw chart in div
+					
+					let races = []
+					$.each(data, function(key, value) {
+						races.push(value.Race);
+					});
+					console.log(races)
+					
+					let svg = d3.select(".year-chart svg")
+					
+					let legend = svg.append("g")
+						  .attr("font-family", "sans-serif")
+						  .attr("font-size", 10)
+						  .attr("transform", "translate(-90,25)")
+						  .selectAll("g")
+						  .data(races)
+						  .enter().append("g")
+						  .attr("transform", function(d, i) { return "translate(0," + i * 15 + ")"; });
+					
+					let z = d3.scaleOrdinal(d3.schemeCategory20c);
+					
+					legend.append("rect")
+						.attr("x", 120)
+						.attr("width", 10)
+						.attr("height", 10)
+						.attr("fill", z);
+
+					legend.append("text")
+						.attr("x", 135)
+						.attr("y", 5.25)
+						.attr("dy", "0.32em")
+						.text(function(d) {
+							return d;
+						});
 
         };
 
 		const drawVis = function(toggleIndex, s, e) {
-		    let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value));
-		    console.log(status);
+		    let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value, state));
             data = status['data']['distribution_data'];
             state_data = status['state_stat'];
-		    document.querySelector(".year-chart").innerHTML = '';
+		    document.querySelector(".year-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5><br>';
 		    document.querySelector(".horizontal-bar").innerHTML = '';
 		    drawHorizontalBarChart(state_data);
 			drawEthincMix(data);
-
         };
 
 		$(function() {
             $( "#govt-filter" ).change(function() {
+                drawVis(toggleVar, yearStart, yearEnd);
+            });
+        });
+		
+		$(function() {
+            $( "#clear-state" ).click(function() {
+				state = 'All';
+				document.getElementById('state-label').innerHTML = 'All'
                 drawVis(toggleVar, yearStart, yearEnd);
             });
         });

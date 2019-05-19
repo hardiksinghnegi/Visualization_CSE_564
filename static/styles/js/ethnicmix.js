@@ -60,11 +60,13 @@ function donutChart() {
                 .data(pie)
               .enter().append('path')
                 .attr('fill', function(d) { return colour(d.data[category]); })
-                .attr('d', arc);
+                .attr('d', arc)
+				.style('cursor', 'pointer');
             // ===========================================================================================
 
             // ===========================================================================================
             // add text labels
+			/*
             var label = svg.select('.labelName').selectAll('text')
                 .data(pie)
               .enter().append('text')
@@ -103,7 +105,7 @@ function donutChart() {
                     return [arc.centroid(d), outerArc.centroid(d), pos]
                 });
             // ===========================================================================================
-
+			*/
             // ===========================================================================================
             // add tooltip to mouse events on slices and labels
             d3.selectAll('.labelName text, .slices path').call(toolTip);
@@ -125,7 +127,7 @@ function donutChart() {
                         .attr('class', 'toolCircle')
                         .attr('dy', -15) // hard-coded. can adjust this to adjust text vertical alignment in tooltip
                         .html(toolTipHTML(data)) // add text to the circle.
-                        .style('font-size', '.9em')
+                        .style('font-size', '.8em')
                         .style('text-anchor', 'middle'); // centres text in tooltip
 
                     svg.append('circle')

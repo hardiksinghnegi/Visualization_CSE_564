@@ -121,6 +121,45 @@
 		border:1px solid black;
 	}
 	
+	.infotip {
+		position: relative;
+		display: inline-block;
+		cursor:pointer;
+	}
+
+	.infotip .infotiptext {
+		visibility: hidden;
+		width: 120px;
+		background-color: #555;
+		color: #fff;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px 0;
+		position: absolute;
+		z-index: 1;
+		bottom: 125%;
+		left: 50%;
+		margin-left: -60px;
+		opacity: 0;
+		transition: opacity 0.3s;
+	}
+
+	.infotip .infotiptext::after {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: #555 transparent transparent transparent;
+	}
+
+	.infotip:hover .infotiptext {
+		visibility: visible;
+		opacity: 1;
+	}
+	
 </style>
 
 <body onresize="change_button()">
@@ -187,20 +226,23 @@
 			<div class="timeline-filter" align="center">
             </div>
             <div>
-                <div class="time-series border" style="float:left;width:50%" align="center">
-					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+                <div class="time-series" style="float:left;width:50%" align="center">
+					<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5>
 					<br>
+					<i style="font-size:24px;position:absolute;top:200;left:785" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
                 </div>
-				<div class="unemployment-chart border" style="float:left;width:50%" align="center">
-					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+				<div class="unemployment-chart" style="float:left;width:50%" align="center">
+					<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5>
 					<br>
+					<i style="font-size:24px;position:absolute;top:200;left:1285" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
                 </div>
 				<div class="m-pie-chart border" style="float:left;width:100%" align="center">
-					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+					<h5 class="center-align" style="margin-top:20px">SHOOTER'S MENTAL CONDITION DATA</h5>
 					<br>
+					<i style="font-size:24px;position:absolute;top:600;left:785" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
 				</div>
 				<div class="scatter-matrix border" style="clear:both" align="center">
-					<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4>
+					<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5>
 					<br>
 				</div>
             </div>
@@ -453,10 +495,10 @@
 				.call(xAxis)
 				.append("text")
 				.attr("class", "label")
-				.attr("x", width)
-				.attr("y", -6)
-				.style("text-anchor", "end")
-				.text("Rate");
+				.attr("x", width/2)
+				.attr("y", 27)
+                .style("fill", "black")
+				.text("Unemployment Rate");
 
 			svg.append("g")
 				.attr("class", "y axis")
@@ -464,10 +506,11 @@
 				.append("text")
 				.attr("class", "label")
 				.attr("transform", "rotate(-90)")
-				.attr("y", 6)
+				.attr("y", -42)
+				.attr("x", -65)
 				.attr("dy", ".71em")
-				.style("text-anchor", "end")
-				.text("Incidents");
+                .style("fill", "black")
+				.text("Number of incidents");
 
 			svg.selectAll(".dot")
 				.data(filteredData)
@@ -859,10 +902,10 @@
 		const drawVis = function(toggleIndex, s, e) {
 			let featureData = JSON.parse(getData(s, e));
 			data = featureData['ftr_data'];
-		    document.querySelector(".unemployment-chart").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
-		    document.querySelector(".time-series").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
-			document.querySelector(".m-pie-chart").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
-			document.querySelector(".scatter-matrix").innerHTML = '<h4 class="center-align" style="margin-top:20px">SOME HEADING</h4><br>';
+		    document.querySelector(".unemployment-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:120px;left:1285px" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+		    document.querySelector(".time-series").innerHTML = '<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:120px;left:785px" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+			document.querySelector(".m-pie-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">' + "SHOOTER'S MENTAL CONDITION DATA" + '</h5><br><i style="font-size:18px;position:absolute;top:426px;left:1020px" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+			document.querySelector(".scatter-matrix").innerHTML = '<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5><br>';
 			drawMultiLine(s, e);
 			drawScatter(s, e);
 			drawPie(data);
