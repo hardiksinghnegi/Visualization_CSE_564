@@ -135,6 +135,45 @@
 	.bar { 
 		fill: steelblue; 
 	}
+	
+	.infotip {
+		position: relative;
+		display: inline-block;
+		cursor:pointer;
+	}
+
+	.infotip .infotiptext {
+		visibility: hidden;
+		width: 120px;
+		background-color: #555;
+		color: #fff;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px 0;
+		position: absolute;
+		z-index: 1;
+		bottom: 125%;
+		left: 50%;
+		margin-left: -60px;
+		opacity: 0;
+		transition: opacity 0.3s;
+	}
+
+	.infotip .infotiptext::after {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: #555 transparent transparent transparent;
+	}
+
+	.infotip:hover .infotiptext {
+		visibility: visible;
+		opacity: 1;
+	}
 
 </style>
 
@@ -202,9 +241,10 @@
             <div class="timeline-filter" align="center">
             </div>
             <!-- page title area end -->
-            <div class="year-chart" align="center" valign="center" style="float:left;width:40%;">
+            <div class="year-chart" align="center" valign="center" style="float:left;width:40%;position:relative">
 				<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5>
 				<br>
+				<i style="font-size:18px;position:absolute;top:18.5%;left:88%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
             </div>
 			<div class="horizontal-bar" style="float:left;width:35%">
             </div>
@@ -519,7 +559,7 @@
 		    let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value, state));
             data = status['data']['distribution_data'];
             state_data = status['state_stat'];
-		    document.querySelector(".year-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5><br>';
+		    document.querySelector(".year-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5><br><i style="font-size:18px;position:absolute;top:5.25%;left:96%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
 		    document.querySelector(".horizontal-bar").innerHTML = '';
 		    drawHorizontalBarChart(state_data);
 			drawEthincMix(data);

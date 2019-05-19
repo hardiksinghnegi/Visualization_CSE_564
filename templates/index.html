@@ -171,6 +171,45 @@
 		overflow-x: hidden;
 	}
 
+	.infotip {
+		position: relative;
+		display: inline-block;
+		cursor:pointer;
+	}
+
+	.infotip .infotiptext {
+		visibility: hidden;
+		width: 120px;
+		background-color: #555;
+		color: #fff;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px 0;
+		position: absolute;
+		z-index: 1;
+		bottom: 125%;
+		left: 50%;
+		margin-left: -60px;
+		opacity: 0;
+		transition: opacity 0.3s;
+	}
+
+	.infotip .infotiptext::after {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: #555 transparent transparent transparent;
+	}
+
+	.infotip:hover .infotiptext {
+		visibility: visible;
+		opacity: 1;
+	}
+
 </style>
 
 <body onresize="change_button()">
@@ -236,9 +275,10 @@
             </div>
 			<div class="timeline-filter" align="center">
             </div>
-            <div class="bar-scree">
+            <div class="bar-scree" style="position:relative">
 				<h4 class="center-align" style="margin-top:10px">DISTRIBUTION OF INCIDENTS OVER THE YEARS</h4>
 				<br>
+				<i style="font-size:18px;position:absolute;top:0.5%;left:76%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
 				<div>
 					<div class="border" style="float:left;width:15%;margin-left:12%">
 						<div class="tile-header border">
@@ -333,6 +373,7 @@
 				</div>
 				<h4 class="center-align" style="margin-top:45px">STACKED BARCHART SHOWING TYPES OF VICTIMS</h4>
 				<br>
+				<i style="font-size:18px;position:absolute;top:57%;left:78%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
                 <div class="stack-chart" align="center">
                 </div>
             </div>

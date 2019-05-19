@@ -226,22 +226,22 @@
 			<div class="timeline-filter" align="center">
             </div>
             <div>
-                <div class="time-series" style="float:left;width:50%" align="center">
+                <div class="time-series" style="float:left;width:50%;position:relative;" align="center">
 					<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5>
 					<br>
 					<i style="font-size:24px;position:absolute;top:200;left:785" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
                 </div>
-				<div class="unemployment-chart" style="float:left;width:50%" align="center">
+				<div class="unemployment-chart" style="float:left;width:50%;position:relative;" align="center">
 					<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5>
 					<br>
 					<i style="font-size:24px;position:absolute;top:200;left:1285" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
                 </div>
-				<div class="m-pie-chart border" style="float:left;width:100%" align="center">
+				<div class="m-pie-chart border" style="float:left;width:100%;position:relative;" align="center">
 					<h5 class="center-align" style="margin-top:20px">SHOOTER'S MENTAL CONDITION DATA</h5>
 					<br>
 					<i style="font-size:24px;position:absolute;top:600;left:785" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>
 				</div>
-				<div class="scatter-matrix border" style="clear:both" align="center">
+				<div class="scatter-matrix border" style="clear:both;position:relative;" align="center">
 					<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5>
 					<br>
 				</div>
@@ -902,10 +902,10 @@
 		const drawVis = function(toggleIndex, s, e) {
 			let featureData = JSON.parse(getData(s, e));
 			data = featureData['ftr_data'];
-		    document.querySelector(".unemployment-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:120px;left:1285px" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
-		    document.querySelector(".time-series").innerHTML = '<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:120px;left:785px" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
-			document.querySelector(".m-pie-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">' + "SHOOTER'S MENTAL CONDITION DATA" + '</h5><br><i style="font-size:18px;position:absolute;top:426px;left:1020px" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
-			document.querySelector(".scatter-matrix").innerHTML = '<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5><br>';
+		    document.querySelector(".unemployment-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:85%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+		    document.querySelector(".time-series").innerHTML = '<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:91.5%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+			document.querySelector(".m-pie-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">' + "SHOOTER'S MENTAL CONDITION DATA" + '</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:70%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+			document.querySelector(".scatter-matrix").innerHTML = '<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5><br><i style="font-size:18px;position:absolute;top:3.75%;left:79.5%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
 			drawMultiLine(s, e);
 			drawScatter(s, e);
 			drawPie(data);
