@@ -559,7 +559,7 @@
 		    let status = JSON.parse(getData(yearStart, yearEnd, document.getElementById('govt-filter').value, state));
             data = status['data']['distribution_data'];
             state_data = status['state_stat'];
-		    document.querySelector(".year-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5><br><i style="font-size:18px;position:absolute;top:5.25%;left:96%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+		    document.querySelector(".year-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px;margin-bottom:55px">RACIAL DISTRIBUTION OF THE SHOOTER</h5><br><i style="font-size:18px;position:absolute;top:5.25%;left:96%" class="fa infotip">&#xf05a; <span class="infotiptext">Race distribution analysis of the perpretrators</span></i>';
 		    document.querySelector(".horizontal-bar").innerHTML = '';
 		    drawHorizontalBarChart(state_data);
 			drawEthincMix(data);

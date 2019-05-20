@@ -216,7 +216,7 @@
                         </div>
                     </div>
                     <!-- profile info & task notification -->
-					<h3 class="center-align">FEATURE RELATIONS WITH SHOOTINGS</h3>
+					<h3 class="center-align">FEATURE ANALYSIS</h3>
                 </div>
             </div>
             <!-- header area end -->
@@ -902,10 +902,10 @@
 		const drawVis = function(toggleIndex, s, e) {
 			let featureData = JSON.parse(getData(s, e));
 			data = featureData['ftr_data'];
-		    document.querySelector(".unemployment-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:85%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
-		    document.querySelector(".time-series").innerHTML = '<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:91.5%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
-			document.querySelector(".m-pie-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">' + "SHOOTER'S MENTAL CONDITION DATA" + '</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:70%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
-			document.querySelector(".scatter-matrix").innerHTML = '<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5><br><i style="font-size:18px;position:absolute;top:3.75%;left:79.5%" class="fa infotip">&#xf05a; <span class="infotiptext">Tooltip text</span></i>';
+		    document.querySelector(".unemployment-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">UNEMPLOYMENT RATE VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:85%" class="fa infotip">&#xf05a; <span class="infotiptext">Correlation study between incidents and unemployment rate</span></i>';
+		    document.querySelector(".time-series").innerHTML = '<h5 class="center-align" style="margin-top:20px">MENTAL AWARENESS SCORES VS INCIDENTS</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:91.5%" class="fa infotip">&#xf05a; <span class="infotiptext">Correlation study between incidents and mental health awareness</span></i>';
+			document.querySelector(".m-pie-chart").innerHTML = '<h5 class="center-align" style="margin-top:20px">' + "SHOOTER'S MENTAL CONDITION DATA" + '</h5><br><i style="font-size:18px;position:absolute;top:7.5%;left:70%" class="fa infotip">&#xf05a; <span class="infotiptext">Pie chart showing the distribution of mental health of the shooters</span></i>';
+			document.querySelector(".scatter-matrix").innerHTML = '<h5 class="center-align" style="margin-top:20px">SCATTERPLOT MATRIX - COMBINED ANALYSIS OF ALL FACTORS</h5><br><i style="font-size:18px;position:absolute;top:3.75%;left:79.5%" class="fa infotip">&#xf05a; <span class="infotiptext">Scatterlplot matrix showing correlation between all the features against incidents</span></i>';
 			drawMultiLine(s, e);
 			drawScatter(s, e);
 			drawPie(data);
